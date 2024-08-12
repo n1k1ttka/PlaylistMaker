@@ -29,7 +29,7 @@
             android:paddingStart="4dp"
             android:text="@string/settings"
             android:textColor="@color/black"
-            android:textSize="22sp"/>
+            android:textSize="@dimen/text_22"/>
 
     </LinearLayout>
 
@@ -42,7 +42,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingHorizontal="16dp"
+            android:paddingHorizontal="@dimen/padding_16"
             android:paddingVertical="10dp">
             
             <TextView
@@ -52,7 +52,7 @@
                 android:layout_marginVertical="11dp"
                 android:text="@string/dark_theme"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_16" />
             
             <androidx.appcompat.widget.SwitchCompat
                 android:layout_width="wrap_content"
@@ -63,7 +63,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="16dp"
+            android:paddingStart="@dimen/padding_16"
             android:paddingEnd="11dp"
             android:paddingVertical="10dp">
 
@@ -74,7 +74,7 @@
                 android:layout_marginVertical="11dp"
                 android:text="@string/share"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_16" />
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -87,7 +87,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="16dp"
+            android:paddingStart="@dimen/padding_16"
             android:paddingEnd="11dp"
             android:paddingVertical="10dp">
 
@@ -98,7 +98,7 @@
                 android:layout_marginVertical="11dp"
                 android:text="@string/support"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_16" />
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -111,7 +111,7 @@
         <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:paddingStart="16dp"
+            android:paddingStart="@dimen/padding_16"
             android:paddingEnd="11dp"
             android:paddingVertical="10dp">
 
@@ -122,7 +122,7 @@
                 android:layout_marginVertical="11dp"
                 android:text="@string/contract"
                 android:textColor="@color/black"
-                android:textSize="16sp" />
+                android:textSize="@dimen/text_16" />
 
             <ImageView
                 android:layout_width="wrap_content"

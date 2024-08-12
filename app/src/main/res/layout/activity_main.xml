@@ -19,7 +19,7 @@
             android:id="@+id/main_header"
             android:gravity="start"
             android:text="Playlist maker"
-            android:textSize="22sp"
+            android:textSize="@dimen/text_22"
             android:textColor="@color/white"/>
 
     </FrameLayout>
@@ -29,7 +29,7 @@
         android:layout_height="wrap_content"
         android:layout_weight="9"
         android:orientation="vertical"
-        android:padding="20dp">
+        android:paddingHorizontal="20dp">
 
         <Button
             android:layout_width="match_parent"
@@ -38,13 +38,14 @@
             android:id="@+id/search"
             android:backgroundTint="@color/white"
             android:text="@string/search"
-            android:textSize="22sp"
+            android:textSize="@dimen/text_22"
             android:textColor="@color/black"
             android:foreground="?attr/selectableItemBackground"
-            app:cornerRadius="16dp"
+            android:textAllCaps="false"
+            app:cornerRadius="@dimen/radius_16"
             app:icon="@drawable/ic_search"
             app:iconGravity="textStart"
-            app:iconPadding="8dp"
+            app:iconPadding="@dimen/padding_8"
             app:iconTint="@color/black"/>
 
         <Button
@@ -54,13 +55,14 @@
             android:layout_weight="3"
             android:backgroundTint="@color/white"
             android:text="@string/media"
-            android:textSize="22sp"
+            android:textSize="@dimen/text_22"
             android:textColor="@color/black"
             android:foreground="?attr/selectableItemBackground"
-            app:cornerRadius="16dp"
+            android:textAllCaps="false"
+            app:cornerRadius="@dimen/radius_16"
             app:icon="@drawable/ic_media"
             app:iconGravity="textStart"
-            app:iconPadding="8dp"
+            app:iconPadding="@dimen/padding_8"
             app:iconTint="@color/black"/>
 
         <Button
@@ -70,13 +72,14 @@
             android:layout_weight="3"
             android:backgroundTint="@color/white"
             android:text="@string/settings"
-            android:textSize="22sp"
+            android:textSize="@dimen/text_22"
             android:textColor="@color/black"
             android:foreground="?attr/selectableItemBackground"
-            app:cornerRadius="16dp"
+            android:textAllCaps="false"
+            app:cornerRadius="@dimen/radius_16"
             app:icon="@drawable/ic_settings"
             app:iconGravity="textStart"
-            app:iconPadding="8dp"
+            app:iconPadding="@dimen/padding_8"
             app:iconTint="@color/black"/>
     </LinearLayout>
 </LinearLayout>
