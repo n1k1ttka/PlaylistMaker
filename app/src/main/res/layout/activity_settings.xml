@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/main"
@@ -28,7 +29,7 @@
             android:layout_gravity="center_vertical"
             android:paddingStart="4dp"
             android:text="@string/settings"
-            android:textColor="@color/black"
+            android:textColor="@color/category"
             android:textSize="@dimen/text_22"/>
 
     </LinearLayout>
@@ -46,18 +47,16 @@
             android:paddingVertical="10dp">
             
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginVertical="11dp"
-                android:text="@string/dark_theme"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_16" />
+                style="@style/SettingsTextView"
+                android:text="@string/dark_theme"/>
             
             <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/mode_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"/>
+                android:layout_gravity="end"
+                app:thumbTint="@drawable/switch_thumb"
+                app:trackTint="@drawable/switch_track"/>
         </FrameLayout>
 
         <FrameLayout
@@ -68,19 +67,14 @@
             android:paddingVertical="10dp">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginVertical="11dp"
-                android:text="@string/share"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_16" />
+                style="@style/SettingsTextView"
+                android:text="@string/share"/>
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:scaleType="centerCrop"
                 android:layout_gravity="center_vertical|end"
+                android:scaleType="centerCrop"
                 android:src="@drawable/ic_share" />
         </FrameLayout>
 
@@ -92,13 +86,8 @@
             android:paddingVertical="10dp">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginVertical="11dp"
-                android:text="@string/support"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_16" />
+                style="@style/SettingsTextView"
+                android:text="@string/support"/>
 
             <ImageView
                 android:layout_width="wrap_content"
@@ -116,13 +105,8 @@
             android:paddingVertical="10dp">
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:layout_marginVertical="11dp"
-                android:text="@string/contract"
-                android:textColor="@color/black"
-                android:textSize="@dimen/text_16" />
+                style="@style/SettingsTextView"
+                android:text="@string/contract" />
 
             <ImageView
                 android:layout_width="wrap_content"

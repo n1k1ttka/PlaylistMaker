@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/main"
-    android:background="@color/blue"
+    android:background="@color/main_background"
     android:orientation="vertical">
 
     <FrameLayout
@@ -18,9 +18,10 @@
             android:layout_height="wrap_content"
             android:id="@+id/main_header"
             android:gravity="start"
-            android:text="Playlist maker"
+            android:text="@string/app_name"
             android:textSize="@dimen/text_22"
-            android:textColor="@color/white"/>
+            android:textColor="@color/white"
+            android:fontFamily="@font/ys_text_medium"/>
 
     </FrameLayout>
 
@@ -32,54 +33,24 @@
         android:paddingHorizontal="20dp">
 
         <Button
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
+            style="@style/MainButtonStyle"
             android:layout_weight="3"
             android:id="@+id/search"
-            android:backgroundTint="@color/white"
             android:text="@string/search"
-            android:textSize="@dimen/text_22"
-            android:textColor="@color/black"
-            android:foreground="?attr/selectableItemBackground"
-            android:textAllCaps="false"
-            app:cornerRadius="@dimen/radius_16"
-            app:icon="@drawable/ic_search"
-            app:iconGravity="textStart"
-            app:iconPadding="@dimen/padding_8"
-            app:iconTint="@color/black"/>
+            app:icon="@drawable/ic_search"/>
 
         <Button
+            style="@style/MainButtonStyle"
+            android:layout_weight="3"
             android:id="@+id/media"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="3"
-            android:backgroundTint="@color/white"
             android:text="@string/media"
-            android:textSize="@dimen/text_22"
-            android:textColor="@color/black"
-            android:foreground="?attr/selectableItemBackground"
-            android:textAllCaps="false"
-            app:cornerRadius="@dimen/radius_16"
-            app:icon="@drawable/ic_media"
-            app:iconGravity="textStart"
-            app:iconPadding="@dimen/padding_8"
-            app:iconTint="@color/black"/>
+            app:icon="@drawable/ic_media"/>
 
         <Button
-            android:id="@+id/settings"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
+            style="@style/MainButtonStyle"
             android:layout_weight="3"
-            android:backgroundTint="@color/white"
+            android:id="@+id/settings"
             android:text="@string/settings"
-            android:textSize="@dimen/text_22"
-            android:textColor="@color/black"
-            android:foreground="?attr/selectableItemBackground"
-            android:textAllCaps="false"
-            app:cornerRadius="@dimen/radius_16"
-            app:icon="@drawable/ic_settings"
-            app:iconGravity="textStart"
-            app:iconPadding="@dimen/padding_8"
-            app:iconTint="@color/black"/>
+            app:icon="@drawable/ic_settings"/>
     </LinearLayout>
 </LinearLayout>
