@@ -71,6 +71,7 @@
                 android:text="@string/share"/>
 
             <ImageView
+                android:id="@+id/share_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical|end"
@@ -90,6 +91,7 @@
                 android:text="@string/support"/>
 
             <ImageView
+                android:id="@+id/support"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleType="centerCrop"
@@ -109,6 +111,7 @@
                 android:text="@string/contract" />
 
             <ImageView
+                android:id="@+id/contract"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:scaleType="centerCrop"

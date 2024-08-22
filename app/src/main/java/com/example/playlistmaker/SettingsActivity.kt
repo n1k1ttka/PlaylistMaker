@@ -2,9 +2,9 @@ package com.example.playlistmaker
 
 import android.content.Intent
 import android.content.res.Configuration
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
-import android.widget.Button
 import android.widget.ImageView
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
@@ -27,6 +27,34 @@ class SettingsActivity : AppCompatActivity() {
         val backBttn = findViewById<ImageView>(R.id.back)
         val backClickListener: View.OnClickListener = View.OnClickListener { finish() }
         backBttn.setOnClickListener(backClickListener)
+
+        val share = findViewById<ImageView>(R.id.share_button)
+        val shareClickListener: View.OnClickListener = View.OnClickListener {
+            val shareIntent = Intent().apply {
+                action = Intent.ACTION_SEND
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.course_url))
+                type = "text/plain"
+            }
+            startActivity(shareIntent)
+        }
+        share.setOnClickListener(shareClickListener)
+
+        val support = findViewById<ImageView>(R.id.support)
+        val supportClickListener: View.OnClickListener = View.OnClickListener {
+            val sendMailIntent = Intent(Intent.ACTION_SENDTO).apply {
+                data = Uri.parse("mailto:${getString(R.string.my_mail)}")
+                putExtra(Intent.EXTRA_SUBJECT, getString(R.string.for_developer))
+                putExtra(Intent.EXTRA_TEXT, getString(R.string.thanks_developers))
+            }
+            startActivity(sendMailIntent)
+        }
+        support.setOnClickListener(supportClickListener)
+
+        val userContract = findViewById<ImageView>(R.id.contract)
+        userContract.setOnClickListener {
+            val uri = Uri.parse(getString(R.string.ya_offer))
+            startActivity(Intent(Intent.ACTION_VIEW, uri))
+        }
 
         val modeSwitch = findViewById<SwitchCompat>(R.id.mode_switch)
 
