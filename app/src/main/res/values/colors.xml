@@ -5,8 +5,10 @@
 
     <!-- Custom colors -->
     <color name="YP_black">#1A1B22</color>
+    <color name="transparent">#00000000</color>
 
     <!-- Custom colors day/night -->
     <color name="main_background">#3772E7</color>
     <color name="category">#1A1B22</color>
+    <color name="hint_color">#AEAFB4</color>
 </resources>
