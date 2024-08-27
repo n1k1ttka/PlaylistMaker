@@ -44,10 +44,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:paddingHorizontal="@dimen/padding_16"
-            android:paddingVertical="10dp">
+            android:paddingVertical="@dimen/padding_10">
             
             <TextView
                 style="@style/SettingsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/dark_theme"/>
             
             <androidx.appcompat.widget.SwitchCompat
@@ -64,10 +66,12 @@
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/padding_16"
             android:paddingEnd="11dp"
-            android:paddingVertical="10dp">
+            android:paddingVertical="@dimen/padding_10">
 
             <TextView
                 style="@style/SettingsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/share"/>
 
             <ImageView
@@ -84,10 +88,12 @@
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/padding_16"
             android:paddingEnd="11dp"
-            android:paddingVertical="10dp">
+            android:paddingVertical="@dimen/padding_10">
 
             <TextView
                 style="@style/SettingsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/support"/>
 
             <ImageView
@@ -104,10 +110,12 @@
             android:layout_height="wrap_content"
             android:paddingStart="@dimen/padding_16"
             android:paddingEnd="11dp"
-            android:paddingVertical="10dp">
+            android:paddingVertical="@dimen/padding_10">
 
             <TextView
                 style="@style/SettingsTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:text="@string/contract" />
 
             <ImageView

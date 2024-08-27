@@ -50,10 +50,11 @@
             android:drawablePadding="12dp"
             android:hint="@string/search"
             android:textColorHint="@color/hint_color"
-            android:textColor="@color/YP_black"
+            android:textColor="@color/black"
             android:textSize="16sp"
             android:fontFamily="@font/ys_text_regular"
             android:maxLines="1"
+            android:textCursorDrawable="@drawable/cursor"
             android:singleLine="true"/>
 
         <ImageButton
