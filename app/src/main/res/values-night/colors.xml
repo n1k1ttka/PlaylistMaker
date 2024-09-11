@@ -8,4 +8,5 @@
     <color name="category">#FFFFFFFF</color>
     <color name="main_background">#1A1B22</color>
     <color name="hint_color">#1A1B22</color>
+    <color name="music">#FFFFFFFF</color>
 </resources>

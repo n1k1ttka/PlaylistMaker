@@ -63,8 +63,14 @@
             android:layout_height="match_parent"
             android:layout_marginEnd="@dimen/padding_16"
             android:layout_gravity="center_vertical|end"
-            android:visibility="gone"
+            android:visibility="visible"
             android:backgroundTint="@color/transparent"
             android:src="@drawable/ic_cancel"/>
     </FrameLayout>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/track_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="@dimen/padding_16"/>
 </LinearLayout>
