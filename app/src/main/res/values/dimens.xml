@@ -9,4 +9,7 @@
     <dimen name="text_11">11sp</dimen>
     <dimen name="padding_12">12dp</dimen>
     <dimen name="padding_1">1dp</dimen>
+    <dimen name="margin_102">102dp</dimen>
+    <dimen name="text_19">19sp</dimen>
+    <dimen name="margin_24">24dp</dimen>
 </resources>
