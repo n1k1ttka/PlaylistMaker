@@ -19,6 +19,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.model.Track
@@ -43,7 +44,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var placeholderButton: Button
     private lateinit var iTunesService: ITunesApiService
 
-    private val songs = ArrayList<Track>()
+    private val songs = mutableListOf<Track>()
     private val adapter = TrackAdapter(songs)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -82,6 +83,7 @@ class SearchActivity : AppCompatActivity() {
             inputEditText.setText("")
             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(clearButton.windowToken, 0)
+            recycler.isVisible = false
         }
 
         val simpleTextWatcher = object : TextWatcher {
@@ -103,8 +105,9 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.addTextChangedListener(simpleTextWatcher)
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
-                remoteRequest()
-                true
+                if (inputEditText.text.isEmpty()) {
+                    recycler.isVisible =  false
+                } else remoteRequest()
             }
             false
         }
@@ -121,7 +124,7 @@ class SearchActivity : AppCompatActivity() {
 
     override fun onRestoreInstanceState(savedInstanceState: Bundle) {
         super.onRestoreInstanceState(savedInstanceState)
-        inputEditText.setText(savedInstanceState.getString(SEARCH_EDIT_TEXT, DEFAULT_TEXT))
+        inputEditText.setText(savedInstanceState.getString(SEARCH_EDIT_TEXT, ""))
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
@@ -134,8 +137,8 @@ class SearchActivity : AppCompatActivity() {
 
     private fun showMessage(text: String, image: Drawable?, additionalMessage: String) {
         if (text.isNotEmpty()) {
-            recycler.visibility = View.GONE
-            placeholder.visibility = View.VISIBLE
+            recycler.isVisible = false
+            placeholder.isVisible = true
             songs.clear()
             adapter.notifyDataSetChanged()
             placeholderImage.setImageDrawable(image)
@@ -143,13 +146,13 @@ class SearchActivity : AppCompatActivity() {
             if (additionalMessage.isNotEmpty()) {
                 Toast.makeText(applicationContext, additionalMessage, Toast.LENGTH_LONG)
                     .show()
-                placeholderButton.visibility = View.VISIBLE
+                placeholderButton.isVisible = true
             } else {
-                placeholderButton.visibility = View.GONE
+                placeholderButton.isVisible = false
             }
         } else {
-            placeholder.visibility = View.GONE
-            recycler.visibility = View.VISIBLE
+            placeholder.isVisible = false
+            recycler.isVisible = true
         }
     }
 
@@ -181,6 +184,5 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         const val SEARCH_EDIT_TEXT = "SearchEditText"
-        const val DEFAULT_TEXT = ""
     }
 }
