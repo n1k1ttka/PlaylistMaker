@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:id="@+id/main"
     android:orientation="vertical">
 
@@ -70,11 +70,35 @@
             android:src="@drawable/ic_cancel"/>
     </FrameLayout>
 
+    <TextView
+        android:id="@+id/history_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="42dp"
+        android:layout_marginBottom="20dp"
+        android:gravity="center_horizontal"
+        android:text="@string/you_were_looking_for"
+        android:textColor="@color/category"
+        android:textSize="@dimen/text_19"
+        android:textAllCaps="false"
+        android:fontFamily="@font/ys_text_medium"
+        android:visibility="gone"/>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/track_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
         android:layout_marginTop="@dimen/padding_16"/>
+
+    <Button
+        style="@style/SearchFrameButtonStyle"
+        android:id="@+id/clear_history"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/clear_history"
+        android:layout_marginTop="@dimen/margin_24"/>
 
     <LinearLayout
         android:id="@+id/placeholderMessage"
@@ -103,17 +127,12 @@
             tools:text="@string/no_internet"/>
         
         <Button
+            style="@style/SearchFrameButtonStyle"
             android:id="@+id/refresh"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/margin_24"
-            android:text="@string/refresh"
-            android:textSize="14sp"
-            android:fontFamily="@font/ys_text_medium"
-            android:textAllCaps="false"
-            android:backgroundTint="@color/category"
-            app:cornerRadius="54dp"
-            android:visibility="gone"/>
+            android:text="@string/refresh"/>
 
     </LinearLayout>
 

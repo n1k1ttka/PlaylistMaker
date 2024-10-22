@@ -9,7 +9,7 @@
     <string name="share">Share app</string>
     <string name="support">Report to support</string>
     <string name="contract">User contract</string>
-    <string name="my_mail">nikita.kolgushkin@,ail.ru</string>
+    <string name="my_mail">nikita.kolgushkin@mail.ru</string>
     <string name="for_developer">Message for Playlist Maker developers</string>
     <string name="thanks_developers">Thanks for cool app, dear developers!</string>
     <string name="course_url">https://practicum.yandex.ru/profile/android-developer/</string>
@@ -17,4 +17,6 @@
     <string name="no_internet">Connection problems\n\nLoading is falling. Check\nyour network connection</string>
     <string name="nothing_was_found">Nothing was found</string>
     <string name="refresh">Refresh</string>
+    <string name="clear_history">Clear history</string>
+    <string name="you_were_looking_for">You were looking for</string>
 </resources>
