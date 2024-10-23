@@ -106,7 +106,7 @@ class SearchActivity : AppCompatActivity() {
             inputEditText.setText("")
             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(clearButton.windowToken, 0)
-            if (searchHistory.readHistory().size != 0) {
+            if (searchHistory.readHistory().isNotEmpty()) {
                 story.clear()
                 story.addAll(searchHistory.readHistory())
                 recycler.adapter = storyAdapter
@@ -127,7 +127,7 @@ class SearchActivity : AppCompatActivity() {
                     textValue = s.toString()
                 }
                 clearButton.visibility = clearButtonVisibility(s)
-                clearHistoryBttn.isVisible = inputEditText.hasFocus() && inputEditText.text.isEmpty() && searchHistory.readHistory().size != 0
+                clearHistoryBttn.isVisible = inputEditText.hasFocus() && inputEditText.text.isEmpty() && searchHistory.readHistory().isNotEmpty()
                 historyHint.isVisible = clearHistoryBttn.isVisible
                 recycler.isVisible = clearHistoryBttn.isVisible
             }
@@ -141,7 +141,7 @@ class SearchActivity : AppCompatActivity() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (inputEditText.text.isEmpty()) {
                     searchHistory.saveHistory(story)
-                    if (searchHistory.readHistory().size != 0) {
+                    if (searchHistory.readHistory().isNotEmpty()) {
                         story.clear()
                         story.addAll(searchHistory.readHistory())
                         recycler.adapter = storyAdapter
