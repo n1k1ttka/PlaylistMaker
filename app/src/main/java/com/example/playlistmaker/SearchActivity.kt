@@ -64,8 +64,9 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
+        val url = "https://itunes.apple.com"
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://itunes.apple.com")
+            .baseUrl(url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
         iTunesService = retrofit.create<ITunesApiService>()
@@ -113,6 +114,7 @@ class SearchActivity : AppCompatActivity() {
                 clearHistoryBttn.isVisible = true
                 historyHint.isVisible = true
                 recycler.isVisible = true
+                placeholder.isVisible = false
                 storyAdapter.notifyDataSetChanged()
             } else recycler.isVisible = false
         }
@@ -129,7 +131,10 @@ class SearchActivity : AppCompatActivity() {
                 clearButton.visibility = clearButtonVisibility(s)
                 clearHistoryBttn.isVisible = inputEditText.hasFocus() && inputEditText.text.isEmpty() && searchHistory.readHistory().isNotEmpty()
                 historyHint.isVisible = clearHistoryBttn.isVisible
+                placeholder.isVisible = false
                 recycler.isVisible = clearHistoryBttn.isVisible
+                recycler.adapter = storyAdapter
+                storyAdapter.notifyDataSetChanged()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -148,6 +153,7 @@ class SearchActivity : AppCompatActivity() {
                         clearHistoryBttn.isVisible = true
                         historyHint.isVisible = true
                         recycler.isVisible = true
+                        placeholder.isVisible = false
                         storyAdapter.notifyDataSetChanged()
                     } else recycler.isVisible = false
                 } else {
@@ -159,6 +165,9 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.setOnFocusChangeListener { view, hasFocus ->
             clearHistoryBttn.isVisible = hasFocus && inputEditText.text.isEmpty() && searchHistory.readHistory().size != 0
             historyHint.isVisible = clearHistoryBttn.isVisible
+            placeholder.isVisible = false
+            recycler.adapter = storyAdapter
+            storyAdapter.notifyDataSetChanged()
         }
 
         placeholderButton.setOnClickListener{

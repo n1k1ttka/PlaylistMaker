@@ -8,6 +8,8 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.model.Track
 import java.lang.Exception
 
+const val STORYSIZE = 10
+
 class TrackAdapter(
     private val tracks: List<Track>,
     private val story: MutableList<Track>
@@ -26,16 +28,13 @@ class TrackAdapter(
                 story.remove(tracks[position])
                 story.add(0, tracks[position])
                 inStory = true
-                //searchHistory.saveHistory(story)
             }
             if (!inStory) {
-                if (story.size < 10) {
+                if (story.size < STORYSIZE) {
                     story.add(0, tracks[position])
-                    //searchHistory.saveHistory(story)
                 } else {
                     story.removeAt(9)
                     story.add(0, tracks[position])
-                    //searchHistory.saveHistory(story)
                 }
             }
         }
