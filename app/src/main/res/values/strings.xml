@@ -8,7 +8,7 @@
     <string name="share">Поделиться приложением</string>
     <string name="support">Написать в поддержку</string>
     <string name="contract">Пользовательское соглашение</string>
-    <string name="my_mail">nikita.kolgushkin@,ail.ru</string>
+    <string name="my_mail">nikita.kolgushkin@mail.ru</string>
     <string name="for_developer">Сообщение разработчикам и разработчицам приложения Playlist Maker</string>
     <string name="thanks_developers">Спасибо разработчикам и разработчицам за крутое приложение!</string>
     <string name="course_url">https://practicum.yandex.ru/profile/android-developer/</string>
@@ -16,4 +16,6 @@
     <string name="no_internet">Проблемы со связью\n\nЗагрузка не удалась. Проверьте\nподключение к интернету</string>
     <string name="nothing_was_found">Ничего не нашлось</string>
     <string name="refresh">Обновить</string>
+    <string name="clear_history">Очистить историю</string>
+    <string name="you_were_looking_for">Вы искали</string>
 </resources>

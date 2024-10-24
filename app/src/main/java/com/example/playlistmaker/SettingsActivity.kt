@@ -13,7 +13,13 @@ import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 
+const val NIGHT_MODE_PREFERENCES = "night_mode_preferences"
+const val DAYNIGHT_SWITCHER_KEY = "key_for_daynight_switcher"
+
 class SettingsActivity : AppCompatActivity() {
+
+    private var darkTheme = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -57,12 +63,8 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         val modeSwitch = findViewById<SwitchCompat>(R.id.mode_switch)
-
-        modeSwitch.isChecked =
-            when (resources?.configuration?.uiMode?.and(Configuration.UI_MODE_NIGHT_MASK)) {
-            Configuration.UI_MODE_NIGHT_YES -> true
-            else -> false
-        }
+        val sharedPrefs = getSharedPreferences(NIGHT_MODE_PREFERENCES, MODE_PRIVATE)
+        modeSwitch.isChecked = sharedPrefs.getBoolean(DAYNIGHT_SWITCHER_KEY, false)
 
         modeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
             AppCompatDelegate.setDefaultNightMode(
@@ -72,6 +74,9 @@ class SettingsActivity : AppCompatActivity() {
                     AppCompatDelegate.MODE_NIGHT_NO
                 }
             )
+            sharedPrefs.edit()
+                .putBoolean(DAYNIGHT_SWITCHER_KEY, isChecked)
+                .apply()
         }
     }
 }

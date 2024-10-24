@@ -50,7 +50,6 @@
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/padding_1"
                 android:layout_gravity="center_vertical"
                 android:src="@drawable/ic_interpoint"/>
 
@@ -58,6 +57,7 @@
                 android:id="@+id/track_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:textSize="@dimen/text_11"
                 android:textColor="@color/music"
                 android:fontFamily="@font/ys_text_regular"
