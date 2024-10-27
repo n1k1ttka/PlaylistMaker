@@ -25,6 +25,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.remote.ITunesApiService
 import com.example.playlistmaker.remote.ITunesResponce
+import com.example.playlistmaker.view.SearchHistory
+import com.example.playlistmaker.view.StoryAdapter
 import com.example.playlistmaker.view.TrackAdapter
 import retrofit2.Call
 import retrofit2.Callback
@@ -32,6 +34,8 @@ import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
+
+const val TRACK_HISTORY_PREFERENCES = "track_history_preferences"
 
 class SearchActivity : AppCompatActivity() {
 
@@ -45,7 +49,10 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var iTunesService: ITunesApiService
 
     private val songs = mutableListOf<Track>()
-    private val adapter = TrackAdapter(songs)
+    private val story = mutableListOf<Track>()
+    private lateinit var adapter: TrackAdapter
+    private lateinit var storyAdapter: StoryAdapter
+    private lateinit var searchHistory: SearchHistory
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,33 +64,59 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
+        val url = "https://itunes.apple.com"
         val retrofit = Retrofit.Builder()
-            .baseUrl("https://itunes.apple.com")
+            .baseUrl(url)
             .addConverterFactory(GsonConverterFactory.create())
             .build()
-
         iTunesService = retrofit.create<ITunesApiService>()
+
+        val sharedPrefs = getSharedPreferences(TRACK_HISTORY_PREFERENCES, MODE_PRIVATE)
+        searchHistory = SearchHistory(sharedPrefs)
+        story.addAll(searchHistory.readHistory())
+
+        adapter = TrackAdapter(songs, story)
+        storyAdapter = StoryAdapter(story)
 
         recycler = findViewById(R.id.track_recycler_view)
         recycler.layoutManager = LinearLayoutManager(this)
-        recycler.adapter = adapter
+        recycler.adapter = storyAdapter
 
         val backBttn = findViewById<ImageView>(R.id.back)
         val backClickListener: View.OnClickListener = View.OnClickListener { finish() }
         backBttn.setOnClickListener(backClickListener)
 
         val clearButton = findViewById<ImageButton>(R.id.clear_button)
+        val clearHistoryBttn = findViewById<Button>(R.id.clear_history)
+        val historyHint = findViewById<TextView>(R.id.history_hint)
         inputEditText = findViewById(R.id.searching)
         placeholder = findViewById(R.id.placeholderMessage)
         placeholderImage = findViewById(R.id.placeholderImage)
         placeholderMessage = findViewById(R.id.error_text)
         placeholderButton = findViewById(R.id.refresh)
 
+        clearButton.isVisible = false
+        if (story.size != 0) {
+            clearHistoryBttn.isVisible = true
+            historyHint.isVisible = true
+            recycler.isVisible = true
+        }
+
         clearButton.setOnClickListener {
+            searchHistory.saveHistory(story)
             inputEditText.setText("")
             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(clearButton.windowToken, 0)
-            recycler.isVisible = false
+            if (searchHistory.readHistory().isNotEmpty()) {
+                story.clear()
+                story.addAll(searchHistory.readHistory())
+                recycler.adapter = storyAdapter
+                clearHistoryBttn.isVisible = true
+                historyHint.isVisible = true
+                recycler.isVisible = true
+                placeholder.isVisible = false
+                storyAdapter.notifyDataSetChanged()
+            } else recycler.isVisible = false
         }
 
         val simpleTextWatcher = object : TextWatcher {
@@ -96,6 +129,12 @@ class SearchActivity : AppCompatActivity() {
                     textValue = s.toString()
                 }
                 clearButton.visibility = clearButtonVisibility(s)
+                clearHistoryBttn.isVisible = inputEditText.hasFocus() && inputEditText.text.isEmpty() && searchHistory.readHistory().isNotEmpty()
+                historyHint.isVisible = clearHistoryBttn.isVisible
+                placeholder.isVisible = false
+                recycler.isVisible = clearHistoryBttn.isVisible
+                recycler.adapter = storyAdapter
+                storyAdapter.notifyDataSetChanged()
             }
 
             override fun afterTextChanged(s: Editable?) {
@@ -106,14 +145,40 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (inputEditText.text.isEmpty()) {
-                    recycler.isVisible =  false
-                } else remoteRequest()
+                    searchHistory.saveHistory(story)
+                    if (searchHistory.readHistory().isNotEmpty()) {
+                        story.clear()
+                        story.addAll(searchHistory.readHistory())
+                        recycler.adapter = storyAdapter
+                        clearHistoryBttn.isVisible = true
+                        historyHint.isVisible = true
+                        recycler.isVisible = true
+                        placeholder.isVisible = false
+                        storyAdapter.notifyDataSetChanged()
+                    } else recycler.isVisible = false
+                } else {
+                    remoteRequest()
+                }
             }
             false
+        }
+        inputEditText.setOnFocusChangeListener { view, hasFocus ->
+            clearHistoryBttn.isVisible = hasFocus && inputEditText.text.isEmpty() && searchHistory.readHistory().size != 0
+            historyHint.isVisible = clearHistoryBttn.isVisible
+            placeholder.isVisible = false
+            recycler.adapter = storyAdapter
+            storyAdapter.notifyDataSetChanged()
         }
 
         placeholderButton.setOnClickListener{
             remoteRequest()
+        }
+
+        clearHistoryBttn.setOnClickListener{
+            searchHistory.saveHistory(mutableListOf())
+            recycler.isVisible = false
+            clearHistoryBttn.isVisible = false
+            historyHint.isVisible = clearHistoryBttn.isVisible
         }
     }
 
@@ -140,6 +205,9 @@ class SearchActivity : AppCompatActivity() {
             recycler.isVisible = false
             placeholder.isVisible = true
             songs.clear()
+            story.clear()
+            story.addAll(searchHistory.readHistory())
+            recycler.adapter = adapter
             adapter.notifyDataSetChanged()
             placeholderImage.setImageDrawable(image)
             placeholderMessage.text = text
@@ -164,8 +232,11 @@ class SearchActivity : AppCompatActivity() {
             ) {
                 if(response.code() == 200) {
                     songs.clear()
+                    story.clear()
+                    story.addAll(searchHistory.readHistory())
                     if(response.body()?.results?.isNotEmpty() == true) {
                         songs.addAll(response.body()?.results!!)
+                        recycler.adapter = adapter
                         adapter.notifyDataSetChanged()
                         showMessage("", null, "")
                     } else {
