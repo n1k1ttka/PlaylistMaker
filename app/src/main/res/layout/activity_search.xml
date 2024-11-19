@@ -29,7 +29,7 @@
             android:paddingStart="4dp"
             android:text="@string/search"
             android:fontFamily="@font/ys_text_medium"
-            android:textColor="@color/category"
+            android:textColor="@color/black_white"
             android:textSize="@dimen/text_22"/>
 
     </LinearLayout>
@@ -78,7 +78,7 @@
         android:layout_marginBottom="20dp"
         android:gravity="center_horizontal"
         android:text="@string/you_were_looking_for"
-        android:textColor="@color/category"
+        android:textColor="@color/black_white"
         android:textSize="@dimen/text_19"
         android:textAllCaps="false"
         android:fontFamily="@font/ys_text_medium"
@@ -122,7 +122,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/ys_text_medium"
             android:textSize="@dimen/text_19"
-            android:textColor="@color/category"
+            android:textColor="@color/black_white"
             android:gravity="center_horizontal"
             tools:text="@string/no_internet"/>
         

@@ -29,7 +29,7 @@
             android:layout_gravity="center_vertical"
             android:paddingStart="4dp"
             android:text="@string/settings"
-            android:textColor="@color/category"
+            android:textColor="@color/black_white"
             android:textSize="@dimen/text_22"/>
 
     </LinearLayout>
