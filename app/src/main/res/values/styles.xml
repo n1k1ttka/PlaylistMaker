@@ -3,7 +3,7 @@
     <style name="MainButtonStyle" parent="Widget.MaterialComponents.Button.UnelevatedButton">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">0dp</item>
-        <item name="android:backgroundTint">@color/white</item>
+        <item name="android:backgroundTint">@color/main_buttons</item>
         <item name="android:text">@string/search</item>
         <item name="android:textSize">@dimen/text_22</item>
         <item name="android:textColor">@color/black</item>
@@ -34,7 +34,7 @@
     </style>
 
     <style name="MediaPlayerTextViewStyle">
-        <item name="android:fontFamily">@font/ys_text_regular"</item>
+        <item name="android:fontFamily">@font/ys_text_regular</item>
         <item name="android:textSize">@dimen/text_13</item>
     </style>
 </resources>

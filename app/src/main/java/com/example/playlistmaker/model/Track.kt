@@ -2,6 +2,7 @@ package com.example.playlistmaker.model
 
 import android.os.Parcel
 import android.os.Parcelable
+import androidx.versionedparcelable.VersionedParcelize
 import java.io.Serializable
 
 data class Track(
