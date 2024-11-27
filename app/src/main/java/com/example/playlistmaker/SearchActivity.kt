@@ -75,7 +75,7 @@ class SearchActivity : AppCompatActivity() {
         searchHistory = SearchHistory(sharedPrefs)
         story.addAll(searchHistory.readHistory())
 
-        adapter = TrackAdapter(songs, story)
+        adapter = TrackAdapter(this, songs, story)
         storyAdapter = StoryAdapter(story)
 
         recycler = findViewById(R.id.track_recycler_view)

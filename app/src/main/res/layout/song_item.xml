@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textSize="@dimen/text_16"
-            android:textColor="@color/category"
+            android:textColor="@color/black_white"
             android:fontFamily="@font/ys_text_regular"
             tools:text="Yesterday (Remastered 2009)"/>
 
