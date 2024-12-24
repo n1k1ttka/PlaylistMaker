@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="text_22">22sp</dimen>
+    <dimen name="text_19">19sp</dimen>
     <dimen name="text_16">16sp</dimen>
+    <dimen name="text_14">14sp</dimen>
+    <dimen name="text_11">11sp</dimen>
     <dimen name="radius_16">16dp</dimen>
     <dimen name="padding_16">16dp</dimen>
+    <dimen name="padding_12">12dp</dimen>
     <dimen name="padding_10">10dp</dimen>
     <dimen name="padding_8">8dp</dimen>
-    <dimen name="text_11">11sp</dimen>
-    <dimen name="padding_12">12dp</dimen>
     <dimen name="padding_1">1dp</dimen>
     <dimen name="margin_102">102dp</dimen>
-    <dimen name="text_19">19sp</dimen>
+    <dimen name="margin_30">30dp</dimen>
     <dimen name="margin_24">24dp</dimen>
+    <dimen name="margin_12">12dp</dimen>
+    <dimen name="text_13">13sp</dimen>
 </resources>
