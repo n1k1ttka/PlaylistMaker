@@ -6,6 +6,7 @@ import androidx.versionedparcelable.VersionedParcelize
 import java.io.Serializable
 
 data class Track(
+    val previewUrl: String,
     val trackId: Int,
     val trackName: String, // Название композиции
     val collectionName: String, // Альбом
@@ -17,6 +18,7 @@ data class Track(
     val releaseDate: String, // Дата релиза
 ): Parcelable {
     constructor(parcel: Parcel) : this(
+        parcel.readString()!!,
         parcel.readInt(),  // Чтение id
         parcel.readString()!!,  // Чтение композиции
         parcel.readString()!!, // Чтение альбома
@@ -33,6 +35,7 @@ data class Track(
     }
 
     override fun writeToParcel(p0: Parcel, p1: Int) {
+        p0.writeString(previewUrl)
         p0.writeInt(trackId)
         p0.writeString(trackName)
         p0.writeString(collectionName)

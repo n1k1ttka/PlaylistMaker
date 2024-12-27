@@ -7,7 +7,8 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.model.Track
 
 class StoryAdapter(
-    private val story: MutableList<Track>
+    private val story: MutableList<Track>,
+    private val onItemClick: (Track) -> Unit
 ):  RecyclerView.Adapter<TrackViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         return TrackViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.song_item, parent, false))
@@ -17,5 +18,8 @@ class StoryAdapter(
 
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         holder.bind(story[position])
+        holder.itemView.setOnClickListener {
+            onItemClick(story[position])
+        }
     }
 }

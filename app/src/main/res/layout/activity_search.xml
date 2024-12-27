@@ -89,6 +89,14 @@
             android:fontFamily="@font/ys_text_medium"
             android:visibility="gone"/>
 
+        <ProgressBar android:id="@+id/progressBar"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:layout_marginTop="140dp"
+            android:layout_gravity="center_horizontal"
+            android:indeterminateTint="#3772E7"
+            android:visibility="gone"/>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/track_recycler_view"
             android:layout_width="match_parent"

@@ -1,7 +1,11 @@
 package com.example.playlistmaker
 
+import android.media.MediaPlayer
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.View
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
@@ -15,6 +19,16 @@ import com.example.playlistmaker.utils.convertMillisToMinutesAndSeconds
 import com.example.playlistmaker.utils.dateFormatter
 
 class MediaActivity : AppCompatActivity() {
+
+    private var mediaPlayer = MediaPlayer()
+    private var mainThreadHandler: Handler? = null
+    private var updateTimerTask: Runnable? = null
+    private var isTimerRunning = false
+    private var secondsLeftTextView: TextView? = null
+    private var mediaUrl: String = ""
+    private lateinit var playButton: ImageButton
+    private var secondsCount = 30000L
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -25,11 +39,18 @@ class MediaActivity : AppCompatActivity() {
             insets
         }
 
-        val backBttn = findViewById<ImageView>(R.id.back)
-        val backClickListener: View.OnClickListener = View.OnClickListener { finish() }
-        backBttn.setOnClickListener(backClickListener)
+        mainThreadHandler = Handler(Looper.getMainLooper())
+        secondsLeftTextView = findViewById(R.id.time)
 
         val track = intent.getParcelableExtra<Track>("track")
+
+        val backBttn = findViewById<ImageView>(R.id.back)
+        playButton = findViewById(R.id.play)
+        val backClickListener: View.OnClickListener = View.OnClickListener { finish() }
+        backBttn.setOnClickListener(backClickListener)
+        playButton.setOnClickListener {
+            playbackControl()
+        }
 
         if (track != null){
             val artist = findViewById<TextView>(R.id.artist_name)
@@ -41,6 +62,7 @@ class MediaActivity : AppCompatActivity() {
             val country = findViewById<TextView>(R.id.country_value)
             val albumImage = findViewById<ImageView>(R.id.album_image)
 
+            mediaUrl = track.previewUrl
             artist.text = track.artistName
             albumName.text = track.collectionName
             album.text = albumName.text
@@ -58,5 +80,106 @@ class MediaActivity : AppCompatActivity() {
                 .placeholder(R.drawable.bigplaceholder)
                 .into(albumImage)
         }
+
+        preparePlayer(playButton)
     }
+
+    override fun onPause() {
+        super.onPause()
+        pausePlayer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mediaPlayer.release()
+    }
+
+    private fun preparePlayer(play: ImageButton) {
+        mediaPlayer.setDataSource(mediaUrl)
+        mediaPlayer.prepareAsync()
+        mediaPlayer.setOnPreparedListener {
+            play.isEnabled = true
+            playerState = STATE_PREPARED
+        }
+        mediaPlayer.setOnCompletionListener {
+            playerState = STATE_PREPARED
+            play.setImageResource(R.drawable.play)
+        }
+    }
+
+    private fun startPlayer() {
+        mediaPlayer.start()
+        playButton.setImageResource(R.drawable.pause)
+        timer("play")
+        playerState = STATE_PLAYING
+    }
+
+    private fun pausePlayer() {
+        mediaPlayer.pause()
+        playButton.setImageResource(R.drawable.play)
+        timer("pause")
+        playerState = STATE_PAUSED
+    }
+
+    private fun playbackControl() {
+        when(playerState) {
+            STATE_PLAYING -> {
+                pausePlayer()
+            }
+            STATE_PREPARED, STATE_PAUSED -> {
+                startPlayer()
+            }
+        }
+    }
+
+    private fun timer(command: String) {
+        when (command) {
+            "play" -> {
+                if (!isTimerRunning) {
+                    isTimerRunning = true
+                    if (updateTimerTask == null) {
+                        updateTimerTask = createUpdateTimerTask()
+                    }
+                    mainThreadHandler?.post(updateTimerTask!!)
+                }
+            }
+            "pause" -> {
+                if (isTimerRunning) {
+                    isTimerRunning = false
+                    updateTimerTask?.let {
+                        mainThreadHandler?.removeCallbacks(it)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun createUpdateTimerTask(): Runnable {
+        return object : Runnable {
+            override fun run() {
+                if (isTimerRunning && secondsCount > 0) {
+                    val seconds = secondsCount / DELAY
+                    secondsLeftTextView?.text = String.format("%d:%02d", seconds / 60, seconds % 60)
+                    secondsCount -= DELAY
+                    mainThreadHandler?.postDelayed(this, DELAY) // Перезапуск
+                } else if (secondsCount <= 0) {
+                    // Сброс таймера, если время истекло
+                    secondsLeftTextView?.text = "0:00"
+                    secondsCount = 30000L
+                    isTimerRunning = false // Таймер завершён
+                }
+            }
+        }
+    }
+
+    companion object {
+        private const val STATE_DEFAULT = 0
+        private const val STATE_PREPARED = 1
+        private const val STATE_PLAYING = 2
+        private const val STATE_PAUSED = 3
+
+        private const val DELAY = 1000L
+    }
+
+    private var playerState = STATE_DEFAULT
 }
