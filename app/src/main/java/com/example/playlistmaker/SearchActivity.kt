@@ -103,7 +103,13 @@ class SearchActivity : AppCompatActivity() {
                 this.startActivity(intent)
             }
         }
-        storyAdapter = StoryAdapter(story)
+        storyAdapter = StoryAdapter(story) { item ->
+            if (clickDebounce()) {
+                val intent = Intent(this, MediaActivity::class.java)
+                intent.putExtra("track", item)
+                this.startActivity(intent)
+            }
+        }
 
         recycler = findViewById(R.id.track_recycler_view)
         recycler.layoutManager = LinearLayoutManager(this)
@@ -271,13 +277,13 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun remoteRequest(){
-        progressBar!!.isVisible = true
+        progressBar?.isVisible = true
         iTunesService.search(inputEditText.text.toString()).enqueue(object : Callback<ITunesResponce> {
             override fun onResponse(
                 call: Call<ITunesResponce>,
                 response: Response<ITunesResponce>
             ) {
-                progressBar!!.isVisible = false
+                progressBar?.isVisible = false
                 if(response.code() == 200) {
                     songs.clear()
                     story.clear()

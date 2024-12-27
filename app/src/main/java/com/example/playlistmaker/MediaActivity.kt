@@ -23,6 +23,7 @@ class MediaActivity : AppCompatActivity() {
     private var mediaPlayer = MediaPlayer()
     private var mainThreadHandler: Handler? = null
     private var updateTimerTask: Runnable? = null
+    private var isTimerRunning = false
     private var secondsLeftTextView: TextView? = null
     private var mediaUrl: String = ""
     private lateinit var playButton: ImageButton
@@ -132,31 +133,40 @@ class MediaActivity : AppCompatActivity() {
     }
 
     private fun timer(command: String) {
-        if (command.equals("play")) {
-            if (updateTimerTask == null) {
-                updateTimerTask = createUpdateTimerTask()
-                mainThreadHandler?.post(updateTimerTask!!)
+        when (command) {
+            "play" -> {
+                if (!isTimerRunning) {
+                    isTimerRunning = true
+                    if (updateTimerTask == null) {
+                        updateTimerTask = createUpdateTimerTask()
+                    }
+                    mainThreadHandler?.post(updateTimerTask!!)
+                }
             }
-        } else if (command.equals("pause")) {
-            updateTimerTask?.let {
-                mainThreadHandler?.removeCallbacks(it)
+            "pause" -> {
+                if (isTimerRunning) {
+                    isTimerRunning = false
+                    updateTimerTask?.let {
+                        mainThreadHandler?.removeCallbacks(it)
+                    }
+                }
             }
-            updateTimerTask = null // Очищаем ссылку на задачу
         }
     }
 
     private fun createUpdateTimerTask(): Runnable {
         return object : Runnable {
             override fun run() {
-                if (secondsCount > 0) {
+                if (isTimerRunning && secondsCount > 0) {
                     val seconds = secondsCount / DELAY
                     secondsLeftTextView?.text = String.format("%d:%02d", seconds / 60, seconds % 60)
                     secondsCount -= DELAY
-                    mainThreadHandler?.postDelayed(this, DELAY)
-                } else {
-                    // Если таймер окончен, выводим текст
+                    mainThreadHandler?.postDelayed(this, DELAY) // Перезапуск
+                } else if (secondsCount <= 0) {
+                    // Сброс таймера, если время истекло
                     secondsLeftTextView?.text = "0:00"
                     secondsCount = 30000L
+                    isTimerRunning = false // Таймер завершён
                 }
             }
         }

@@ -27,7 +27,6 @@ class TrackAdapter(
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         holder.bind(tracks[position])
         holder.itemView.setOnClickListener {
-            // дебаунс делать тут или в лямбде?
             onItemClick(tracks[position])
         }
     }
