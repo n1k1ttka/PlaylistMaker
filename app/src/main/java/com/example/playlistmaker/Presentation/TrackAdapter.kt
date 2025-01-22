@@ -1,16 +1,10 @@
-package com.example.playlistmaker.view
+package com.example.playlistmaker.Presentation
 
-import android.content.Context
-import android.content.Intent
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.core.content.ContextCompat.startActivity
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.MediaActivity
 import com.example.playlistmaker.R
-import com.example.playlistmaker.model.Track
-import java.lang.Exception
+import com.example.playlistmaker.Domain.Track
 
 const val STORYSIZE = 10
 
@@ -30,5 +24,4 @@ class TrackAdapter(
             onItemClick(tracks[position])
         }
     }
-
 }

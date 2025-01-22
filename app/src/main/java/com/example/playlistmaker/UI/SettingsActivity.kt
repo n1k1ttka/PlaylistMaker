@@ -1,7 +1,6 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.UI
 
 import android.content.Intent
-import android.content.res.Configuration
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
@@ -12,13 +11,13 @@ import androidx.appcompat.app.AppCompatDelegate
 import androidx.appcompat.widget.SwitchCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-
-const val NIGHT_MODE_PREFERENCES = "night_mode_preferences"
-const val DAYNIGHT_SWITCHER_KEY = "key_for_daynight_switcher"
+import com.example.playlistmaker.Domain.Creator
+import com.example.playlistmaker.Domain.ThemeInteractor
+import com.example.playlistmaker.R
 
 class SettingsActivity : AppCompatActivity() {
 
-    private var darkTheme = false
+    private lateinit var interactor: ThemeInteractor
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,8 +62,8 @@ class SettingsActivity : AppCompatActivity() {
         }
 
         val modeSwitch = findViewById<SwitchCompat>(R.id.mode_switch)
-        val sharedPrefs = getSharedPreferences(NIGHT_MODE_PREFERENCES, MODE_PRIVATE)
-        modeSwitch.isChecked = sharedPrefs.getBoolean(DAYNIGHT_SWITCHER_KEY, false)
+        interactor = Creator.provideThemeInteractor(this)
+        modeSwitch.isChecked = interactor.loadTheme()
 
         modeSwitch.setOnCheckedChangeListener { buttonView, isChecked ->
             AppCompatDelegate.setDefaultNightMode(
@@ -74,9 +73,7 @@ class SettingsActivity : AppCompatActivity() {
                     AppCompatDelegate.MODE_NIGHT_NO
                 }
             )
-            sharedPrefs.edit()
-                .putBoolean(DAYNIGHT_SWITCHER_KEY, isChecked)
-                .apply()
+            interactor.saveTheme(isChecked)
         }
     }
 }

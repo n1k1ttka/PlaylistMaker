@@ -1,4 +1,4 @@
-package com.example.playlistmaker.remote
+package com.example.playlistmaker.Data
 
 import retrofit2.Call
 import retrofit2.http.GET
