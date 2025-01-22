@@ -1,8 +1,11 @@
 package com.example.playlistmaker
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.drawable.Drawable
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
@@ -13,6 +16,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
@@ -25,6 +29,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.model.Track
 import com.example.playlistmaker.remote.ITunesApiService
 import com.example.playlistmaker.remote.ITunesResponce
+import com.example.playlistmaker.view.STORYSIZE
 import com.example.playlistmaker.view.SearchHistory
 import com.example.playlistmaker.view.StoryAdapter
 import com.example.playlistmaker.view.TrackAdapter
@@ -53,6 +58,8 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var adapter: TrackAdapter
     private lateinit var storyAdapter: StoryAdapter
     private lateinit var searchHistory: SearchHistory
+    private var progressBar: ProgressBar? = null
+    private var isClickAllowed = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -75,8 +82,34 @@ class SearchActivity : AppCompatActivity() {
         searchHistory = SearchHistory(sharedPrefs)
         story.addAll(searchHistory.readHistory())
 
-        adapter = TrackAdapter(this, songs, story)
-        storyAdapter = StoryAdapter(story)
+        adapter = TrackAdapter(songs) { item ->
+            if (clickDebounce()) {
+                var inStory = false
+                if (story.contains(item)) {
+                    story.remove(item)
+                    story.add(0, item)
+                    inStory = true
+                }
+                if (!inStory) {
+                    if (story.size < STORYSIZE) {
+                        story.add(0, item)
+                    } else {
+                        story.removeAt(9)
+                        story.add(0, item)
+                    }
+                }
+                val intent = Intent(this, MediaActivity::class.java)
+                intent.putExtra("track", item)
+                this.startActivity(intent)
+            }
+        }
+        storyAdapter = StoryAdapter(story) { item ->
+            if (clickDebounce()) {
+                val intent = Intent(this, MediaActivity::class.java)
+                intent.putExtra("track", item)
+                this.startActivity(intent)
+            }
+        }
 
         recycler = findViewById(R.id.track_recycler_view)
         recycler.layoutManager = LinearLayoutManager(this)
@@ -94,6 +127,7 @@ class SearchActivity : AppCompatActivity() {
         placeholderImage = findViewById(R.id.placeholderImage)
         placeholderMessage = findViewById(R.id.error_text)
         placeholderButton = findViewById(R.id.refresh)
+        progressBar = findViewById(R.id.progressBar)
 
         clearButton.isVisible = false
         if (story.size != 0) {
@@ -127,7 +161,8 @@ class SearchActivity : AppCompatActivity() {
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 if (!s.isNullOrEmpty()) {
                     textValue = s.toString()
-                }
+                    searchDebounce()
+                } else handler.removeCallbacks(searchRunnable)
                 clearButton.visibility = clearButtonVisibility(s)
                 clearHistoryBttn.isVisible = inputEditText.hasFocus() && inputEditText.text.isEmpty() && searchHistory.readHistory().isNotEmpty()
                 historyHint.isVisible = clearHistoryBttn.isVisible
@@ -157,7 +192,7 @@ class SearchActivity : AppCompatActivity() {
                         storyAdapter.notifyDataSetChanged()
                     } else recycler.isVisible = false
                 } else {
-                    remoteRequest()
+                    searchDebounce()
                 }
             }
             false
@@ -171,7 +206,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         placeholderButton.setOnClickListener{
-            remoteRequest()
+            searchDebounce()
         }
 
         clearHistoryBttn.setOnClickListener{
@@ -181,6 +216,9 @@ class SearchActivity : AppCompatActivity() {
             historyHint.isVisible = clearHistoryBttn.isVisible
         }
     }
+
+    val handler = Handler(Looper.getMainLooper())
+    private val searchRunnable = Runnable { remoteRequest() }
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
@@ -224,12 +262,28 @@ class SearchActivity : AppCompatActivity() {
         }
     }
 
+    private fun clickDebounce() : Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            handler.postDelayed({ isClickAllowed = true }, DEBOUNCE_DELAY)
+        }
+        return current
+    }
+
+    private fun searchDebounce() {
+        handler.removeCallbacks(searchRunnable)
+        handler.postDelayed(searchRunnable, DEBOUNCE_DELAY)
+    }
+
     private fun remoteRequest(){
+        progressBar?.isVisible = true
         iTunesService.search(inputEditText.text.toString()).enqueue(object : Callback<ITunesResponce> {
             override fun onResponse(
                 call: Call<ITunesResponce>,
                 response: Response<ITunesResponce>
             ) {
+                progressBar?.isVisible = false
                 if(response.code() == 200) {
                     songs.clear()
                     story.clear()
@@ -255,5 +309,6 @@ class SearchActivity : AppCompatActivity() {
 
     companion object {
         const val SEARCH_EDIT_TEXT = "SearchEditText"
+        private const val DEBOUNCE_DELAY = 2000L
     }
 }
