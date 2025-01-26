@@ -1,13 +1,19 @@
 package com.example.playlistmaker.Domain
 
+import com.example.playlistmaker.Domain.api.TrackInteractor
+import com.example.playlistmaker.Domain.api.TrackRepository
+import java.util.concurrent.Executors
+
 class TrackInteractorImpl(
     private val trackRepository: TrackRepository,
     private val historyRepository: HistoryRepository
 ): TrackInteractor {
+
+    private val executor = Executors.newCachedThreadPool()
+
     override fun loadTracks(text: String, consumer: TrackInteractor.TracksConsumer) {
-        trackRepository.getTracks(text) { result ->
-            result.onSuccess { consumer.consume(it, "") }
-                .onFailure { consumer.consume(null, it.message.toString()) }
+        executor.execute {
+            consumer.consume(trackRepository.getTracks(text))
         }
     }
 

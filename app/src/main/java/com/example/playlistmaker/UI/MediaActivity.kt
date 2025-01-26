@@ -4,6 +4,7 @@ import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -80,6 +81,8 @@ class MediaActivity : AppCompatActivity() {
                 .transform(RoundedCorners(2))
                 .placeholder(R.drawable.bigplaceholder)
                 .into(albumImage)
+        } else {
+            Log.e("MediaActivity", "Track data is null")
         }
 
         preparePlayer(playButton)

@@ -11,7 +11,6 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.example.playlistmaker.Domain.Creator
 import com.example.playlistmaker.Domain.ThemeInteractor
-import com.example.playlistmaker.Domain.TrackInteractor
 import com.example.playlistmaker.R
 import com.example.playlistmaker.utils.isNightMode
 

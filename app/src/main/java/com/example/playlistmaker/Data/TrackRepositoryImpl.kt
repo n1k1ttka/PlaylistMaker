@@ -1,45 +1,33 @@
 package com.example.playlistmaker.Data
 
+import com.example.playlistmaker.Data.dto.ITunesRequest
+import com.example.playlistmaker.Data.dto.ITunesResponce
+import com.example.playlistmaker.Data.network.TrackNetworkClient
 import com.example.playlistmaker.Domain.Track
-import com.example.playlistmaker.Domain.TrackRepository
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.playlistmaker.Domain.api.TrackRepository
 
 class TrackRepositoryImpl(
-    private val trackNetworkClient: TrackNetworkClient,
-    private val trackManager: TrackManager
+    private val trackNetworkClient: TrackNetworkClient
 ): TrackRepository {
-    override fun getTracks(text: String, callback: (Result<List<Track>>) -> Unit) {
-        trackNetworkClient.loadTracks(text, object : Callback<ITunesResponce>{
-            override fun onResponse(
-                call: Call<ITunesResponce>,
-                response: Response<ITunesResponce>
-            ) {
-                if(response.code() == 200) {
-                    val songsDtos = response.body()?.results ?: emptyList()
-                    val songs = songsDtos.map {
-                        Track( it.previewUrl,
-                            it.trackId,
-                            it.trackName,
-                            it.collectionName,
-                            it.artistName,
-                            it.country,
-                            it.primaryGenreName,
-                            it.trackTimeMillis,
-                            it.artworkUrl100,
-                            it.releaseDate)
-                    }
-                    trackManager.saveHistory(songs)
-                    callback(Result.success(songs))
-                }
+    override fun getTracks(text: String): List<Track> {
+        val responce = trackNetworkClient.load(ITunesRequest(text))
+        if (responce.resultCode == 200) {
+            return (responce as ITunesResponce).results.map {
+                Track(
+                    it.previewUrl,
+                    it.trackId,
+                    it.trackName,
+                    it.collectionName,
+                    it.artistName,
+                    it.country,
+                    it.primaryGenreName,
+                    it.trackTimeMillis,
+                    it.artworkUrl100,
+                    it.releaseDate)
             }
-
-            override fun onFailure(call: Call<ITunesResponce>, t: Throwable) {
-                callback(Result.failure(t))
-            }
-
-        })
+        } else {
+            return emptyList()
+        }
     }
 
 }

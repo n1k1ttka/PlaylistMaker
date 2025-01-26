@@ -29,7 +29,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.Domain.Track
 import com.example.playlistmaker.Presentation.STORYSIZE
 import com.example.playlistmaker.Domain.Creator
-import com.example.playlistmaker.Domain.TrackInteractor
+import com.example.playlistmaker.Domain.api.TrackInteractor
 import com.example.playlistmaker.Presentation.StoryAdapter
 import com.example.playlistmaker.Presentation.TrackAdapter
 import com.example.playlistmaker.R
@@ -39,7 +39,7 @@ class SearchActivity : AppCompatActivity() {
     private lateinit var trackInteractor: TrackInteractor
 
     private lateinit var inputEditText: EditText
-    private lateinit var textValue: String
+    private var textValue: String = ""
     private lateinit var recycler: RecyclerView
     private lateinit var placeholder: ViewGroup
     private lateinit var placeholderImage: ImageView
@@ -101,7 +101,10 @@ class SearchActivity : AppCompatActivity() {
         recycler.adapter = storyAdapter
 
         val backBttn = findViewById<ImageView>(R.id.back)
-        val backClickListener: View.OnClickListener = View.OnClickListener { finish() }
+        val backClickListener: View.OnClickListener = View.OnClickListener {
+            trackInteractor.saveListenedTracks(story)
+            finish()
+        }
         backBttn.setOnClickListener(backClickListener)
 
         val clearButton = findViewById<ImageButton>(R.id.clear_button)
@@ -264,19 +267,19 @@ class SearchActivity : AppCompatActivity() {
     private fun remoteRequest(){
         progressBar?.isVisible = true
         trackInteractor.loadTracks(inputEditText.text.toString(), object : TrackInteractor.TracksConsumer {
-            override fun consume(tracks: List<Track>?, comment: String) {
-                progressBar?.isVisible = false
-                if (tracks != null) {
-                    songs.clear()
-//                    story.clear() TODO Эти две строки были у меня до рефакторинга и исправно работали. Если не сложно, прошу ответить, почему они стали некорректно
-//                    story.addAll(trackInteractor.loadListenedTracks()) TODO работать и почему они лишние. Вроде бы без них у меня наоборот были баги в прошлых версиях
-                    if (tracks.size > 0) {
-                        songs.addAll(tracks)
-                        recycler.adapter = adapter
-                        adapter.notifyDataSetChanged()
-                        showMessage("", null, "")
-                    } else showMessage(getString(R.string.nothing_was_found), getDrawable(R.drawable.res_not_ex), "")
-                } else showMessage(getString(R.string.no_internet), getDrawable(R.drawable.no_internet), comment)
+            override fun consume(tracks: List<Track>?) {
+                runOnUiThread {
+                    progressBar?.isVisible = false
+                    if (tracks != null) {
+                        songs.clear()
+                        if (tracks.size > 0) {
+                            songs.addAll(tracks)
+                            recycler.adapter = adapter
+                            adapter.notifyDataSetChanged()
+                            showMessage("", null, "")
+                        } else showMessage(getString(R.string.nothing_was_found), getDrawable(R.drawable.res_not_ex), "responce have 0 size")
+                    } else showMessage(getString(R.string.no_internet), getDrawable(R.drawable.no_internet), "no responce")
+                }
             }
 
         })

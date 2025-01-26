@@ -1,4 +1,4 @@
-package com.example.playlistmaker.Data
+package com.example.playlistmaker.Data.dto
 
 data class TrackDto(
     val previewUrl: String,

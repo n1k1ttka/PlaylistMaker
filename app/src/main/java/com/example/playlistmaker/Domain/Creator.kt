@@ -5,8 +5,10 @@ import com.example.playlistmaker.Data.HistoryRepositoryImpl
 import com.example.playlistmaker.Data.SettingsManager
 import com.example.playlistmaker.Data.SettingsRepositoryImpl
 import com.example.playlistmaker.Data.TrackManager
-import com.example.playlistmaker.Data.TrackNetworkClient
+import com.example.playlistmaker.Data.network.TrackNetworkClient
 import com.example.playlistmaker.Data.TrackRepositoryImpl
+import com.example.playlistmaker.Domain.api.TrackInteractor
+import com.example.playlistmaker.Domain.api.TrackRepository
 
 object Creator {
 
@@ -23,7 +25,7 @@ object Creator {
     }
 
     private fun getTrackRepository(context: Context): TrackRepository {
-        return TrackRepositoryImpl(getTrackNetworkClient(), getTrackManager(context))
+        return TrackRepositoryImpl(getTrackNetworkClient())
     }
 
     private fun getHistoryRepository(context: Context): HistoryRepository {

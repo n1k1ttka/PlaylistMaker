@@ -1,4 +1,6 @@
-package com.example.playlistmaker.Domain
+package com.example.playlistmaker.Domain.api
+
+import com.example.playlistmaker.Domain.Track
 
 interface TrackInteractor {
     fun loadTracks(text: String, consumer: TracksConsumer)
@@ -8,6 +10,6 @@ interface TrackInteractor {
     fun loadListenedTracks(): List<Track>
 
     interface TracksConsumer {
-        fun consume(tracks: List<Track>?, comment: String)
+        fun consume(tracks: List<Track>?)
     }
 }
