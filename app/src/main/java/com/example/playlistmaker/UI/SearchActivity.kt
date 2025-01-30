@@ -1,4 +1,4 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.UI
 
 import android.content.Context
 import android.content.Intent
@@ -26,38 +26,30 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.playlistmaker.model.Track
-import com.example.playlistmaker.remote.ITunesApiService
-import com.example.playlistmaker.remote.ITunesResponce
-import com.example.playlistmaker.view.STORYSIZE
-import com.example.playlistmaker.view.SearchHistory
-import com.example.playlistmaker.view.StoryAdapter
-import com.example.playlistmaker.view.TrackAdapter
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.create
-
-const val TRACK_HISTORY_PREFERENCES = "track_history_preferences"
+import com.example.playlistmaker.Domain.Track
+import com.example.playlistmaker.Presentation.STORYSIZE
+import com.example.playlistmaker.Domain.Creator
+import com.example.playlistmaker.Domain.api.TrackInteractor
+import com.example.playlistmaker.Presentation.StoryAdapter
+import com.example.playlistmaker.Presentation.TrackAdapter
+import com.example.playlistmaker.R
 
 class SearchActivity : AppCompatActivity() {
 
+    private lateinit var trackInteractor: TrackInteractor
+
     private lateinit var inputEditText: EditText
-    private lateinit var textValue: String
+    private var textValue: String = ""
     private lateinit var recycler: RecyclerView
     private lateinit var placeholder: ViewGroup
     private lateinit var placeholderImage: ImageView
     private lateinit var placeholderMessage: TextView
     private lateinit var placeholderButton: Button
-    private lateinit var iTunesService: ITunesApiService
 
     private val songs = mutableListOf<Track>()
     private val story = mutableListOf<Track>()
     private lateinit var adapter: TrackAdapter
     private lateinit var storyAdapter: StoryAdapter
-    private lateinit var searchHistory: SearchHistory
     private var progressBar: ProgressBar? = null
     private var isClickAllowed = true
 
@@ -71,16 +63,9 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        val url = "https://itunes.apple.com"
-        val retrofit = Retrofit.Builder()
-            .baseUrl(url)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-        iTunesService = retrofit.create<ITunesApiService>()
+        trackInteractor = Creator.provideTrackInteractor(this)
 
-        val sharedPrefs = getSharedPreferences(TRACK_HISTORY_PREFERENCES, MODE_PRIVATE)
-        searchHistory = SearchHistory(sharedPrefs)
-        story.addAll(searchHistory.readHistory())
+        story.addAll(trackInteractor.loadListenedTracks())
 
         adapter = TrackAdapter(songs) { item ->
             if (clickDebounce()) {
@@ -116,7 +101,10 @@ class SearchActivity : AppCompatActivity() {
         recycler.adapter = storyAdapter
 
         val backBttn = findViewById<ImageView>(R.id.back)
-        val backClickListener: View.OnClickListener = View.OnClickListener { finish() }
+        val backClickListener: View.OnClickListener = View.OnClickListener {
+            trackInteractor.saveListenedTracks(story)
+            finish()
+        }
         backBttn.setOnClickListener(backClickListener)
 
         val clearButton = findViewById<ImageButton>(R.id.clear_button)
@@ -137,13 +125,13 @@ class SearchActivity : AppCompatActivity() {
         }
 
         clearButton.setOnClickListener {
-            searchHistory.saveHistory(story)
+            trackInteractor.saveListenedTracks(story)
             inputEditText.setText("")
             val inputMethodManager = getSystemService(Context.INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(clearButton.windowToken, 0)
-            if (searchHistory.readHistory().isNotEmpty()) {
+            if (trackInteractor.loadListenedTracks().isNotEmpty()) {
                 story.clear()
-                story.addAll(searchHistory.readHistory())
+                story.addAll(trackInteractor.loadListenedTracks())
                 recycler.adapter = storyAdapter
                 clearHistoryBttn.isVisible = true
                 historyHint.isVisible = true
@@ -164,7 +152,7 @@ class SearchActivity : AppCompatActivity() {
                     searchDebounce()
                 } else handler.removeCallbacks(searchRunnable)
                 clearButton.visibility = clearButtonVisibility(s)
-                clearHistoryBttn.isVisible = inputEditText.hasFocus() && inputEditText.text.isEmpty() && searchHistory.readHistory().isNotEmpty()
+                clearHistoryBttn.isVisible = inputEditText.hasFocus() && inputEditText.text.isEmpty() && trackInteractor.loadListenedTracks().isNotEmpty()
                 historyHint.isVisible = clearHistoryBttn.isVisible
                 placeholder.isVisible = false
                 recycler.isVisible = clearHistoryBttn.isVisible
@@ -180,10 +168,10 @@ class SearchActivity : AppCompatActivity() {
         inputEditText.setOnEditorActionListener { _, actionId, _ ->
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 if (inputEditText.text.isEmpty()) {
-                    searchHistory.saveHistory(story)
-                    if (searchHistory.readHistory().isNotEmpty()) {
+                    trackInteractor.saveListenedTracks(story)
+                    if (trackInteractor.loadListenedTracks().isNotEmpty()) {
                         story.clear()
-                        story.addAll(searchHistory.readHistory())
+                        story.addAll(trackInteractor.loadListenedTracks())
                         recycler.adapter = storyAdapter
                         clearHistoryBttn.isVisible = true
                         historyHint.isVisible = true
@@ -198,7 +186,7 @@ class SearchActivity : AppCompatActivity() {
             false
         }
         inputEditText.setOnFocusChangeListener { view, hasFocus ->
-            clearHistoryBttn.isVisible = hasFocus && inputEditText.text.isEmpty() && searchHistory.readHistory().size != 0
+            clearHistoryBttn.isVisible = hasFocus && inputEditText.text.isEmpty() && trackInteractor.loadListenedTracks().size != 0
             historyHint.isVisible = clearHistoryBttn.isVisible
             placeholder.isVisible = false
             recycler.adapter = storyAdapter
@@ -210,7 +198,7 @@ class SearchActivity : AppCompatActivity() {
         }
 
         clearHistoryBttn.setOnClickListener{
-            searchHistory.saveHistory(mutableListOf())
+            trackInteractor.saveListenedTracks(listOf())
             recycler.isVisible = false
             clearHistoryBttn.isVisible = false
             historyHint.isVisible = clearHistoryBttn.isVisible
@@ -244,7 +232,7 @@ class SearchActivity : AppCompatActivity() {
             placeholder.isVisible = true
             songs.clear()
             story.clear()
-            story.addAll(searchHistory.readHistory())
+            story.addAll(trackInteractor.loadListenedTracks())
             recycler.adapter = adapter
             adapter.notifyDataSetChanged()
             placeholderImage.setImageDrawable(image)
@@ -278,32 +266,22 @@ class SearchActivity : AppCompatActivity() {
 
     private fun remoteRequest(){
         progressBar?.isVisible = true
-        iTunesService.search(inputEditText.text.toString()).enqueue(object : Callback<ITunesResponce> {
-            override fun onResponse(
-                call: Call<ITunesResponce>,
-                response: Response<ITunesResponce>
-            ) {
-                progressBar?.isVisible = false
-                if(response.code() == 200) {
-                    songs.clear()
-                    story.clear()
-                    story.addAll(searchHistory.readHistory())
-                    if(response.body()?.results?.isNotEmpty() == true) {
-                        songs.addAll(response.body()?.results!!)
-                        recycler.adapter = adapter
-                        adapter.notifyDataSetChanged()
-                        showMessage("", null, "")
-                    } else {
-                        showMessage(getString(R.string.nothing_was_found), getDrawable(R.drawable.res_not_ex), "")
-                    }
-                } else {
-                    showMessage(getString(R.string.no_internet), getDrawable(R.drawable.no_internet), response.code().toString())
+        trackInteractor.loadTracks(inputEditText.text.toString(), object : TrackInteractor.TracksConsumer {
+            override fun consume(tracks: List<Track>?) {
+                runOnUiThread {
+                    progressBar?.isVisible = false
+                    if (tracks != null) {
+                        songs.clear()
+                        if (tracks.size > 0) {
+                            songs.addAll(tracks)
+                            recycler.adapter = adapter
+                            adapter.notifyDataSetChanged()
+                            showMessage("", null, "")
+                        } else showMessage(getString(R.string.nothing_was_found), getDrawable(R.drawable.res_not_ex), "responce have 0 size")
+                    } else showMessage(getString(R.string.no_internet), getDrawable(R.drawable.no_internet), "no responce")
                 }
             }
 
-            override fun onFailure(call: Call<ITunesResponce>, t: Throwable) {
-                showMessage(getString(R.string.no_internet), getDrawable(R.drawable.no_internet), t.message.toString())
-            }
         })
     }
 

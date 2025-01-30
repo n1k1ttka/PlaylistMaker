@@ -1,10 +1,10 @@
-package com.example.playlistmaker.view
+package com.example.playlistmaker.Presentation
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
-import com.example.playlistmaker.model.Track
+import com.example.playlistmaker.Domain.Track
 
 class StoryAdapter(
     private val story: MutableList<Track>,

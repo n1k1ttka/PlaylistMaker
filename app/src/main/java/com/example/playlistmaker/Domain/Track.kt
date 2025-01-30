@@ -1,9 +1,7 @@
-package com.example.playlistmaker.model
+package com.example.playlistmaker.Domain
 
 import android.os.Parcel
 import android.os.Parcelable
-import androidx.versionedparcelable.VersionedParcelize
-import java.io.Serializable
 
 data class Track(
     val previewUrl: String,

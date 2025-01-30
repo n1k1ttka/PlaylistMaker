@@ -1,5 +1,6 @@
-package com.example.playlistmaker.remote
+package com.example.playlistmaker.Data.network
 
+import com.example.playlistmaker.Data.dto.ITunesResponce
 import retrofit2.Call
 import retrofit2.http.GET
 import retrofit2.http.Query

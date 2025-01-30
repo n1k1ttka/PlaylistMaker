@@ -1,9 +1,10 @@
-package com.example.playlistmaker
+package com.example.playlistmaker.UI
 
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.View
 import android.widget.ImageButton
 import android.widget.ImageView
@@ -14,7 +15,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
-import com.example.playlistmaker.model.Track
+import com.example.playlistmaker.Domain.Track
+import com.example.playlistmaker.R
 import com.example.playlistmaker.utils.convertMillisToMinutesAndSeconds
 import com.example.playlistmaker.utils.dateFormatter
 
@@ -79,6 +81,8 @@ class MediaActivity : AppCompatActivity() {
                 .transform(RoundedCorners(2))
                 .placeholder(R.drawable.bigplaceholder)
                 .into(albumImage)
+        } else {
+            Log.e("MediaActivity", "Track data is null")
         }
 
         preparePlayer(playButton)
