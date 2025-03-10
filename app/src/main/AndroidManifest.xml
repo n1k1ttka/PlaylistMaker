@@ -16,19 +16,19 @@
         android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
         tools:targetApi="31">
         <activity
-            android:name=".UI.MediaPlayerActivity"
+            android:name=".UI.media.activity.MediaPlayerActivity"
             android:exported="false" />
         <activity
-            android:name=".UI.SearchActivity"
+            android:name=".UI.search.activity.SearchActivity"
             android:exported="false" />
         <activity
-            android:name=".UI.MediaActivity"
+            android:name=".UI.media.activity.MediaActivity"
             android:exported="false" />
         <activity
-            android:name=".UI.SettingsActivity"
+            android:name=".UI.settings.activity.SettingsActivity"
             android:exported="false" />
         <activity
-            android:name=".UI.MainActivity"
+            android:name=".UI.main.activity.MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
