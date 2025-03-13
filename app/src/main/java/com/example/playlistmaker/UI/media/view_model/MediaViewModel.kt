@@ -3,18 +3,13 @@ package com.example.playlistmaker.UI.media.view_model
 import android.media.MediaPlayer
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.example.playlistmaker.Presentation.state.PlayerState
 
 class MediaViewModel : ViewModel() {
-
-    sealed class PlayerState {
-        object Default : PlayerState()
-        object Prepared : PlayerState()
-        data class Playing(val timeLeft: String) : PlayerState()
-        object Paused : PlayerState()
-    }
 
     private val _playerState = MutableLiveData<PlayerState>(PlayerState.Default)
     val playerState: LiveData<PlayerState> = _playerState
@@ -23,22 +18,31 @@ class MediaViewModel : ViewModel() {
     private var mainThreadHandler: Handler? = null
     private var updateTimerTask: Runnable? = null
     private var isTimerRunning = false
+    private var currentPosition: Int = 0
+    private var isPlaying: Boolean = false
+    private var rotatePlaying: Boolean = false
     private var secondsCount = 30000L
 
-    private var mediaUrl: String = ""
-
     init {
-        mediaPlayer = MediaPlayer()
         mainThreadHandler = Handler(Looper.getMainLooper())
     }
 
     fun preparePlayer(url: String) {
-        mediaUrl = url
+        if (mediaPlayer == null) {
+            mediaPlayer = MediaPlayer()
+        } else {
+            mediaPlayer?.reset()
+        }
         mediaPlayer?.apply {
-            setDataSource(mediaUrl)
+            try {
+                setDataSource(url)
+            } catch (e: Exception) {
+                Log.e("MediaViewModel", "Error setting data source: ${e.message}")
+            }
             prepareAsync()
             setOnPreparedListener {
                 _playerState.value = PlayerState.Prepared
+                restorePlayerState()
             }
             setOnCompletionListener {
                 _playerState.value = PlayerState.Prepared
@@ -48,11 +52,13 @@ class MediaViewModel : ViewModel() {
 
     fun startPlayer() {
         mediaPlayer?.start()
+        isPlaying = true
         startTimer()
     }
 
     fun pausePlayer() {
         mediaPlayer?.pause()
+        isPlaying = false
         stopTimer()
         _playerState.value = PlayerState.Paused
     }
@@ -84,6 +90,27 @@ class MediaViewModel : ViewModel() {
         }
     }
 
+    fun savePlayerState() {
+        mediaPlayer?.let {
+            currentPosition = it.currentPosition
+            rotatePlaying = it.isPlaying
+        }
+    }
+
+    fun restorePlayerState() {
+        mediaPlayer?.let {
+            it.seekTo(currentPosition)
+            if (rotatePlaying) {
+                startPlayer()
+            }
+        }
+    }
+
+    fun releasePlayer() {
+        mediaPlayer?.release()
+        mediaPlayer = null
+    }
+
     private fun createUpdateTimerTask(): Runnable {
         return object : Runnable {
             override fun run() {
@@ -106,13 +133,11 @@ class MediaViewModel : ViewModel() {
                     }
                 }
             }
-
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-        mediaPlayer?.release()
-        mediaPlayer = null
+        releasePlayer()
     }
 }

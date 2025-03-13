@@ -3,6 +3,7 @@ package com.example.playlistmaker.UI.media.activity
 import com.example.playlistmaker.UI.media.view_model.MediaViewModel
 import android.content.Context
 import android.content.Intent
+import android.os.Build.VERSION_CODES.M
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -15,6 +16,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.Domain.Track
+import com.example.playlistmaker.Presentation.state.PlayerState
 import com.example.playlistmaker.R
 import com.example.playlistmaker.Presentation.utils.convertMillisToMinutesAndSeconds
 import com.example.playlistmaker.Presentation.utils.dateFormatter
@@ -29,7 +31,6 @@ class MediaActivity : AppCompatActivity() {
     }
 
     private var mainThreadHandler: Handler? = null
-    private var mediaUrl: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,7 +48,7 @@ class MediaActivity : AppCompatActivity() {
 
         mainThreadHandler = Handler(Looper.getMainLooper())
 
-        val track = intent.getParcelableExtra<Track>("track")
+        val track = savedInstanceState?.getParcelable<Track>("track") ?: intent.getParcelableExtra("track")
 
         binding.back.setOnClickListener { finish() }
 
@@ -56,7 +57,6 @@ class MediaActivity : AppCompatActivity() {
         }
 
         if (track != null) {
-            mediaUrl = track.previewUrl
             binding.artistName.text = track.artistName
             binding.albumName.text = track.collectionName
             binding.albumValue.text = binding.albumName.text
@@ -80,24 +80,40 @@ class MediaActivity : AppCompatActivity() {
 
         viewModel.playerState.observe(this) { state ->
             when (state) {
-                is MediaViewModel.PlayerState.Playing -> {
+                is PlayerState.Playing -> {
                     binding.play.setImageResource(R.drawable.pause)
                     binding.time.text = state.timeLeft
                 }
-                MediaViewModel.PlayerState.Paused -> {
+                PlayerState.Paused -> {
                     binding.play.setImageResource(R.drawable.play)
                 }
-                MediaViewModel.PlayerState.Prepared -> {
+                PlayerState.Prepared -> {
                     binding.play.isEnabled = true
                 }
-                else -> {}
+                PlayerState.Default -> {}
             }
         }
     }
 
     override fun onPause() {
         super.onPause()
+        viewModel.savePlayerState()
         viewModel.pausePlayer()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        val track = intent.getParcelableExtra<Track>("track")
+        if (track != null) {
+            outState.putParcelable("track", track)
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        if (isFinishing) {
+            viewModel.releasePlayer()
+        }
     }
 
     companion object {

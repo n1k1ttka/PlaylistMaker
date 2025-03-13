@@ -10,17 +10,19 @@ import com.example.playlistmaker.Domain.Track
 import com.example.playlistmaker.Presentation.state.TrackListState
 import com.example.playlistmaker.Domain.search.TrackInteractor
 import com.example.playlistmaker.Presentation.model.STORYSIZE
+import com.example.playlistmaker.Presentation.utils.SingleEventFlow
 import com.example.playlistmaker.Presentation.utils.SingleEventLiveData
 import com.example.playlistmaker.creator.Creator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
     application: Application
-): AndroidViewModel(application) {
+) : AndroidViewModel(application) {
 
-    private val trackInteractor = Creator.provideTrackInteractor(getApplication())
+    private val trackInteractor = Creator.provideTrackInteractor()
 
     private val state = MutableLiveData<TrackListState>()
     fun getState(): LiveData<TrackListState> = state
@@ -28,8 +30,8 @@ class SearchViewModel(
     private val trackClickEvent = SingleEventLiveData<Track>()
     fun getTrackClickEvent(): LiveData<Track> = trackClickEvent
 
-    private val trackListenedClickEvent = SingleEventLiveData<Track>()
-    fun getListenedTrackClickEvent(): LiveData<Track> = trackListenedClickEvent
+    private val trackListenedClickEvent = SingleEventFlow<Track>()
+    fun getListenedTrackClickEvent(): SharedFlow<Track> = trackListenedClickEvent.events
 
     private var isClickAllowed = true
 
@@ -38,28 +40,27 @@ class SearchViewModel(
     private var latestSearchText: String? = null
 
     private val _songs = mutableListOf<Track>()
-    val songs: List<Track> = _songs
     private val _story = mutableListOf<Track>()
-    val story: List<Track> = _story
 
-    fun loadListenedTracks(){
+    fun loadListenedTracks() {
         state.value = TrackListState.Loading
         _story.clear()
         _story.addAll(trackInteractor.loadListenedTracks())
-        state.value = TrackListState.Story(story)
+        state.value = TrackListState.Story(_story)
     }
 
-    fun saveListenedTracks(){
-        trackInteractor.saveListenedTracks(story)
+    fun saveListenedTracks() {
+        trackInteractor.saveListenedTracks(_story)
     }
 
-    fun clearListenedTracks(){
+    fun clearListenedTracks() {
         _story.clear()
         _songs.clear()
         saveListenedTracks()
+        state.value = TrackListState.Story(_story)
     }
 
-    fun clickDebounce() : Boolean {
+    fun clickDebounce(): Boolean {
         val current = isClickAllowed
         if (isClickAllowed) {
             isClickAllowed = false
@@ -74,9 +75,9 @@ class SearchViewModel(
     fun searchDebounce(changedText: String) {
         if (changedText == latestSearchText) {
             return
-        } else if (changedText.isNullOrEmpty())
+        } else if (changedText.isNullOrEmpty()) {
             loadListenedTracks()
-        else {
+        } else {
             latestSearchText = changedText
             cancelSearch()
 
@@ -91,37 +92,32 @@ class SearchViewModel(
         searchJob?.cancel()
     }
 
-    fun addInStory(item: Track){
-        var inStory = false
-        if (_story.contains(item)) {
-            _story.remove(item)
+    fun addInStory(item: Track) {
+        if (_story.remove(item)) {
             _story.add(0, item)
-            inStory = true
-        }
-        if (!inStory) {
-            if (_story.size < STORYSIZE) {
-               _story.add(0, item)
-            } else {
-                _story.removeAt(9)
-                _story.add(0, item)
+        } else {
+            if (_story.size >= STORYSIZE) {
+                _story.removeAt(_story.size - 1)
             }
+            _story.add(0, item)
         }
         saveListenedTracks()
     }
 
     fun onTrackClick(track: Track) {
-        if (clickDebounce()){
-            addInStory(track)
+        if (clickDebounce()) {
             trackClickEvent.setValue(track)
-        }
-    }
-    fun onListenedTrackClick(track: Track) {
-        if (clickDebounce()){
-            trackListenedClickEvent.setValue(track)
+            addInStory(track)
         }
     }
 
-    fun remoteRequest(inputEditText: String){
+    fun triggerEvent(track: Track) {
+        viewModelScope.launch {
+            trackListenedClickEvent.sendEvent(track)
+        }
+    }
+
+    fun remoteRequest(inputEditText: String) {
         state.postValue(TrackListState.Loading)
         trackInteractor.loadTracks(inputEditText, object : TrackInteractor.TracksConsumer {
             override fun consume(tracks: List<Track>?) {
@@ -129,11 +125,14 @@ class SearchViewModel(
                     if (tracks.isNotEmpty()) {
                         _songs.clear()
                         _songs.addAll(tracks)
-                        state.postValue(TrackListState.Content(tracks))
-                    } else state.postValue(TrackListState.ZeroContent)
-                } else state.postValue(TrackListState.Error("Проверьте подключение к сети"))
+                        state.postValue(TrackListState.Content(_songs))
+                    } else {
+                        state.postValue(TrackListState.ZeroContent)
+                    }
+                } else {
+                    state.postValue(TrackListState.Error("Проверьте подключение к сети"))
+                }
             }
-
         })
     }
 

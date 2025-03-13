@@ -1,6 +1,7 @@
 package com.example.playlistmaker.creator
 
 import android.content.Context
+import android.content.SharedPreferences
 import com.example.playlistmaker.Data.search.impl.HistoryRepositoryImpl
 import com.example.playlistmaker.Data.settings.SettingsManager
 import com.example.playlistmaker.Data.settings.impl.SettingsRepositoryImpl
@@ -17,35 +18,49 @@ import com.example.playlistmaker.Domain.settings.impl.SettingsInteractorImpl
 
 object Creator {
 
+    private lateinit var applicationContext: Context
+
+    fun init(context: Context) {
+        applicationContext = context.applicationContext
+    }
+
+    fun provideTrackInteractor(): TrackInteractor {
+        return TrackInteractorImpl(getTrackRepository(), getHistoryRepository())
+    }
+
+    fun provideThemeInteractor(): SettingsInteractor {
+        return SettingsInteractorImpl(getSettingsRepository())
+    }
+
     private fun getTrackNetworkClient(): TrackNetworkClient {
         return TrackNetworkClient()
     }
 
-    private fun getTrackManager(context: Context): TrackManager {
-        return TrackManager(context)
+    private fun getTrackManager(): TrackManager {
+        return TrackManager(getTrackPreferences())
     }
 
-    private fun getSettingsManager(context: Context): SettingsManager {
-        return SettingsManager(context)
+    private fun getSettingsManager(): SettingsManager {
+        return SettingsManager(getSettingsPreferences())
     }
 
     private fun getTrackRepository(): TrackRepository {
         return TrackRepositoryImpl(getTrackNetworkClient())
     }
 
-    private fun getHistoryRepository(context: Context): HistoryRepository {
-        return HistoryRepositoryImpl(getTrackManager(context))
+    private fun getHistoryRepository(): HistoryRepository {
+        return HistoryRepositoryImpl(getTrackManager())
     }
 
-    private fun getSettingsRepository(context: Context): SettingsRepository {
-        return SettingsRepositoryImpl(getSettingsManager(context))
+    private fun getSettingsRepository(): SettingsRepository {
+        return SettingsRepositoryImpl(getSettingsManager())
     }
 
-    fun provideTrackInteractor(context: Context): TrackInteractor {
-        return TrackInteractorImpl(getTrackRepository(), getHistoryRepository(context))
+    private fun getTrackPreferences(): SharedPreferences {
+        return applicationContext.getSharedPreferences("track_prefs", Context.MODE_PRIVATE)
     }
 
-    fun provideThemeInteractor(context: Context): SettingsInteractor {
-        return SettingsInteractorImpl(getSettingsRepository(context))
+    private fun getSettingsPreferences(): SharedPreferences {
+        return applicationContext.getSharedPreferences("settings_prefs", Context.MODE_PRIVATE)
     }
 }

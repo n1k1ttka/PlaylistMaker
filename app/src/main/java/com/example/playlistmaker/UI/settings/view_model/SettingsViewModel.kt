@@ -11,7 +11,7 @@ import com.example.playlistmaker.creator.Creator
 
 class SettingsViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val interactor = Creator.provideThemeInteractor(application)
+    private val interactor = Creator.provideThemeInteractor()
 
     private val _themeState = MutableLiveData<Boolean>()
     val themeState: LiveData<Boolean> = _themeState

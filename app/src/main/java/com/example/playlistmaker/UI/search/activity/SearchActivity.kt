@@ -15,7 +15,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.isVisible
+import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.Domain.Track
 import com.example.playlistmaker.Presentation.model.StoryAdapter
@@ -25,6 +27,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.UI.media.activity.MediaActivity
 import com.example.playlistmaker.UI.search.view_model.SearchViewModel
 import com.example.playlistmaker.databinding.ActivitySearchBinding
+import kotlinx.coroutines.launch
 
 class SearchActivity : AppCompatActivity() {
 
@@ -51,8 +54,8 @@ class SearchActivity : AppCompatActivity() {
             insets
         }
 
-        adapter = TrackAdapter(viewModel.songs, viewModel::onTrackClick)
-        storyAdapter = StoryAdapter(viewModel.story, viewModel::onListenedTrackClick)
+        adapter = TrackAdapter(emptyList(), viewModel::onTrackClick)
+        storyAdapter = StoryAdapter(emptyList(), viewModel::triggerEvent)
 
         binding.trackRecyclerView.layoutManager = LinearLayoutManager(this)
         binding.trackRecyclerView.adapter = storyAdapter
@@ -60,8 +63,8 @@ class SearchActivity : AppCompatActivity() {
         viewModel.getState().observe(this) { state ->
             when (state) {
                 is TrackListState.Loading -> showLoading()
-                is TrackListState.Content -> showContent()
-                is TrackListState.Story -> showStory()
+                is TrackListState.Content -> showContent(state.tracks)
+                is TrackListState.Story -> showStory(state.story)
                 is TrackListState.ZeroContent -> showNothingWasFound()
                 is TrackListState.Error -> showError(state.errorMessage)
             }
@@ -72,16 +75,13 @@ class SearchActivity : AppCompatActivity() {
             finish()
         }
 
-        val simpleTextWatcher = object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+        binding.searching.addTextChangedListener(
+            onTextChanged = { text: CharSequence?, start: Int, before: Int, count: Int ->
                 viewModel.cancelSearch()
-                binding.clearButton.visibility = clearButtonVisibility(s)
-                viewModel.searchDebounce(s.toString())
+                binding.clearButton.visibility = clearButtonVisibility(text)
+                viewModel.searchDebounce(text.toString())
             }
-            override fun afterTextChanged(s: Editable?) {}
-        }
-        binding.searching.addTextChangedListener(simpleTextWatcher)
+        )
 
         binding.clearButton.setOnClickListener {
             binding.searching.setText("")
@@ -98,7 +98,8 @@ class SearchActivity : AppCompatActivity() {
         }
 
         binding.searching.setOnFocusChangeListener { _, hasFocus ->
-            binding.clearHistory.isVisible = hasFocus && binding.searching.text.isEmpty() && viewModel.story.isNotEmpty()
+            val isStoryVisible = (viewModel.getState().value as? TrackListState.Story)?.story?.isNotEmpty() == true
+            binding.clearHistory.isVisible = hasFocus && binding.searching.text.isEmpty() && isStoryVisible
             binding.historyHint.isVisible = binding.clearHistory.isVisible
             binding.placeholderMessage.isVisible = false
         }
@@ -119,8 +120,10 @@ class SearchActivity : AppCompatActivity() {
             MediaActivity.show(this, item)
         }
 
-        viewModel.getListenedTrackClickEvent().observe(this) { item ->
-            MediaActivity.show(this, item)
+        lifecycleScope.launch {
+            viewModel.getListenedTrackClickEvent().collect { item ->
+                MediaActivity.show(this@SearchActivity, item)
+            }
         }
     }
 
@@ -140,17 +143,23 @@ class SearchActivity : AppCompatActivity() {
         binding.clearHistory.isVisible = false
     }
 
-    private fun showContent() {
+    private fun showContent(tracks: List<Track>) {
+
+        adapter.updateData(tracks)
         binding.trackRecyclerView.adapter = adapter
+
         binding.historyHint.isVisible = false
         binding.clearHistory.isVisible = false
         showList()
     }
 
-    private fun showStory() {
+    private fun showStory(story: List<Track>) {
+
+        storyAdapter.updateData(story)
         binding.trackRecyclerView.adapter = storyAdapter
-        binding.historyHint.isVisible = viewModel.story.isNotEmpty()
-        binding.clearHistory.isVisible = viewModel.story.isNotEmpty()
+
+        binding.historyHint.isVisible = story.isNotEmpty()
+        binding.clearHistory.isVisible = story.isNotEmpty()
         showList()
     }
 

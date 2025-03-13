@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding // ViewBinding
     private val viewModel by lazy {
         ViewModelProvider(this,
-            MainViewModel.getViewModelFactory(Creator.provideThemeInteractor(this))
+            MainViewModel.getViewModelFactory(Creator.provideThemeInteractor())
         )[MainViewModel::class]
     }
 

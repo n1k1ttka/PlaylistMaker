@@ -9,7 +9,7 @@ import com.example.playlistmaker.Domain.Track
 const val STORYSIZE = 10
 
 class TrackAdapter(
-    private val tracks: List<Track>,
+    private var tracks: List<Track>,
     private val onItemClick: (Track) -> Unit
 ): RecyclerView.Adapter<TrackViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
@@ -23,5 +23,10 @@ class TrackAdapter(
         holder.itemView.setOnClickListener {
             onItemClick(tracks[position])
         }
+    }
+
+    fun updateData(newTracks: List<Track>) {
+        tracks = newTracks
+        notifyDataSetChanged()
     }
 }

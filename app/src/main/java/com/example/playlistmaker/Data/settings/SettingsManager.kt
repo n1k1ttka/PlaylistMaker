@@ -1,11 +1,11 @@
 package com.example.playlistmaker.Data.settings
 
 import android.content.Context
+import android.content.SharedPreferences
 
 const val DAYNIGHT_SWITCHER_KEY = "key_for_daynight_switcher"
 
-class SettingsManager(context: Context) {
-    private val sharedPrefs = context.getSharedPreferences(DAYNIGHT_SWITCHER_KEY, Context.MODE_PRIVATE)
+class SettingsManager(val sharedPrefs: SharedPreferences) {
 
     fun loadTheme(): Boolean {
         return sharedPrefs.getBoolean(DAYNIGHT_SWITCHER_KEY, false)
