@@ -1,6 +1,5 @@
 package com.example.playlistmaker.Data.network
 
-import com.example.playlistmaker.Data.NetworkClient
 import com.example.playlistmaker.Data.dto.ITunesRequest
 import com.example.playlistmaker.Data.dto.Responce
 import retrofit2.Retrofit

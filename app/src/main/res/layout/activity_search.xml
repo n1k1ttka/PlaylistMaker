@@ -70,7 +70,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginEnd="@dimen/padding_16"
                 android:layout_gravity="center_vertical|end"
-                android:visibility="visible"
+                android:visibility="gone"
                 android:backgroundTint="@color/transparent"
                 android:src="@drawable/ic_cancel"/>
         </FrameLayout>
@@ -111,7 +111,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/clear_history"
-            android:layout_marginTop="@dimen/margin_24"/>
+            android:layout_marginTop="@dimen/margin_24"
+            android:visibility="gone"/>
 
         <LinearLayout
             android:id="@+id/placeholderMessage"
