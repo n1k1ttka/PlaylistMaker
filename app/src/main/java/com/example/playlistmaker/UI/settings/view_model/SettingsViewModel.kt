@@ -1,17 +1,20 @@
 package com.example.playlistmaker.UI.settings.view_model
 
-import android.app.Application
 import android.content.Intent
 import android.net.Uri
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.example.playlistmaker.R
-import com.example.playlistmaker.creator.Creator
+import androidx.lifecycle.ViewModel
+import com.example.playlistmaker.Domain.settings.SettingsInteractor
 
-class SettingsViewModel(application: Application) : AndroidViewModel(application) {
-
-    private val interactor = Creator.provideThemeInteractor()
+class SettingsViewModel(
+    private val interactor: SettingsInteractor,
+    private val courseUrl: String,
+    private val myMail: String,
+    private val forDeveloper: String,
+    private val thanksDevelopers: String,
+    private val yaOffer: String
+) : ViewModel() {
 
     private val _themeState = MutableLiveData<Boolean>()
     val themeState: LiveData<Boolean> = _themeState
@@ -23,21 +26,21 @@ class SettingsViewModel(application: Application) : AndroidViewModel(application
     fun getShareIntent(): Intent {
         return Intent().apply {
             action = Intent.ACTION_SEND
-            putExtra(Intent.EXTRA_TEXT, getApplication<Application>().getString(R.string.course_url))
+            putExtra(Intent.EXTRA_TEXT, courseUrl)
             type = "text/plain"
         }
     }
 
     fun getSupportIntent(): Intent {
         return Intent(Intent.ACTION_SENDTO).apply {
-            data = Uri.parse("mailto:${getApplication<Application>().getString(R.string.my_mail)}")
-            putExtra(Intent.EXTRA_SUBJECT, getApplication<Application>().getString(R.string.for_developer))
-            putExtra(Intent.EXTRA_TEXT, getApplication<Application>().getString(R.string.thanks_developers))
+            data = Uri.parse("mailto:$myMail")
+            putExtra(Intent.EXTRA_SUBJECT, forDeveloper)
+            putExtra(Intent.EXTRA_TEXT, thanksDevelopers)
         }
     }
 
     fun getContractIntent(): Intent {
-        return Intent(Intent.ACTION_VIEW, Uri.parse(getApplication<Application>().getString(R.string.ya_offer)))
+        return Intent(Intent.ACTION_VIEW, Uri.parse(yaOffer))
     }
 
     fun toggleTheme(isChecked: Boolean) {

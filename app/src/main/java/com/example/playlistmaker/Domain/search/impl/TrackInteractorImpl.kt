@@ -1,5 +1,6 @@
 package com.example.playlistmaker.Domain.search.impl
 
+import android.util.Log
 import com.example.playlistmaker.Domain.Track
 import com.example.playlistmaker.Domain.search.HistoryRepository
 import com.example.playlistmaker.Domain.search.TrackInteractor
@@ -18,7 +19,8 @@ class TrackInteractorImpl(
         executor.execute {
             try {
                 consumer.consume(trackRepository.getTracks(text))
-            } catch (e: IOException) {
+            } catch (e: Exception) {
+                Log.e("TrackInteractorImpl", "Error loading tracks", e)
                 consumer.consume(null)
             }
         }
