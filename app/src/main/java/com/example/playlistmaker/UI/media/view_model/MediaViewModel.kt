@@ -9,55 +9,64 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.playlistmaker.Presentation.state.PlayerState
 
-class MediaViewModel : ViewModel() {
+class MediaViewModel(
+    private val mediaPlayer: MediaPlayer,
+    private val mainThreadHandler: Handler
+) : ViewModel() {
 
     private val _playerState = MutableLiveData<PlayerState>(PlayerState.Default)
     val playerState: LiveData<PlayerState> = _playerState
 
-    private var mediaPlayer: MediaPlayer? = null
-    private var mainThreadHandler: Handler? = null
     private var updateTimerTask: Runnable? = null
     private var isTimerRunning = false
     private var currentPosition: Int = 0
     private var isPlaying: Boolean = false
     private var rotatePlaying: Boolean = false
     private var secondsCount = 30000L
-
-    init {
-        mainThreadHandler = Handler(Looper.getMainLooper())
-    }
+    private var currentTrackUrl: String? = null
 
     fun preparePlayer(url: String) {
-        if (mediaPlayer == null) {
-            mediaPlayer = MediaPlayer()
-        } else {
-            mediaPlayer?.reset()
+        if (url == currentTrackUrl) {
+            restorePlayerState()
+            return
         }
-        mediaPlayer?.apply {
-            try {
-                setDataSource(url)
-            } catch (e: Exception) {
-                Log.e("MediaViewModel", "Error setting data source: ${e.message}")
-            }
-            prepareAsync()
-            setOnPreparedListener {
-                _playerState.value = PlayerState.Prepared
-                restorePlayerState()
-            }
-            setOnCompletionListener {
-                _playerState.value = PlayerState.Prepared
-            }
+
+        currentTrackUrl = url
+
+        try {
+            mediaPlayer.reset()
+            mediaPlayer.setDataSource(url)
+            mediaPlayer.prepareAsync()
+        } catch (e: Exception) {
+            Log.e("MediaViewModel", "Error setting data source: ${e.message}")
+            _playerState.value = PlayerState.Default
+            return
+        }
+
+        mediaPlayer.setOnPreparedListener {
+            _playerState.value = PlayerState.Prepared
+            restorePlayerState()
+        }
+
+        mediaPlayer.setOnCompletionListener {
+            _playerState.value = PlayerState.Prepared
+        }
+
+        mediaPlayer.setOnErrorListener { _, what, extra ->
+            Log.e("MediaViewModel", "MediaPlayer error: what=$what, extra=$extra")
+            _playerState.value = PlayerState.Default
+            true
         }
     }
 
     fun startPlayer() {
-        mediaPlayer?.start()
+        mediaPlayer.start()
         isPlaying = true
         startTimer()
     }
 
     fun pausePlayer() {
-        mediaPlayer?.pause()
+        mediaPlayer.pause()
         isPlaying = false
         stopTimer()
         _playerState.value = PlayerState.Paused
@@ -77,7 +86,7 @@ class MediaViewModel : ViewModel() {
             if (updateTimerTask == null) {
                 updateTimerTask = createUpdateTimerTask()
             }
-            mainThreadHandler?.post(updateTimerTask!!)
+            mainThreadHandler.post(updateTimerTask!!)
         }
     }
 
@@ -85,13 +94,13 @@ class MediaViewModel : ViewModel() {
         if (isTimerRunning) {
             isTimerRunning = false
             updateTimerTask?.let {
-                mainThreadHandler?.removeCallbacks(it)
+                mainThreadHandler.removeCallbacks(it)
             }
         }
     }
 
     fun savePlayerState() {
-        mediaPlayer?.let {
+        mediaPlayer.let {
             currentPosition = it.currentPosition
             rotatePlaying = it.isPlaying
         }
@@ -107,14 +116,13 @@ class MediaViewModel : ViewModel() {
     }
 
     fun releasePlayer() {
-        mediaPlayer?.release()
-        mediaPlayer = null
+        mediaPlayer.release()
     }
 
     private fun createUpdateTimerTask(): Runnable {
         return object : Runnable {
             override fun run() {
-                mediaPlayer?.let { player ->
+                mediaPlayer.let { player ->
                     val currentPosition = player.currentPosition
                     val timeLeft = (secondsCount - currentPosition) / 1000
                     if (isTimerRunning && player.isPlaying && timeLeft > 0) {

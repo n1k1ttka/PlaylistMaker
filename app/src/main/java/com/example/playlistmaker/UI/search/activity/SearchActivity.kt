@@ -25,17 +25,17 @@ import com.example.playlistmaker.Presentation.model.TrackAdapter
 import com.example.playlistmaker.Presentation.state.TrackListState
 import com.example.playlistmaker.R
 import com.example.playlistmaker.UI.media.activity.MediaActivity
+import com.example.playlistmaker.UI.media.view_model.MediaViewModel
 import com.example.playlistmaker.UI.search.view_model.SearchViewModel
 import com.example.playlistmaker.databinding.ActivitySearchBinding
 import kotlinx.coroutines.launch
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class SearchActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySearchBinding
 
-    private val viewModel by lazy {
-        ViewModelProvider(this)[SearchViewModel::class]
-    }
+    private val viewModel by viewModel<SearchViewModel>()
 
     private lateinit var adapter: TrackAdapter
     private lateinit var storyAdapter: StoryAdapter

@@ -1,10 +1,8 @@
 package com.example.playlistmaker.UI.search.view_model
 
-
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.Domain.Track
 import com.example.playlistmaker.Presentation.state.TrackListState
@@ -12,17 +10,14 @@ import com.example.playlistmaker.Domain.search.TrackInteractor
 import com.example.playlistmaker.Presentation.model.STORYSIZE
 import com.example.playlistmaker.Presentation.utils.SingleEventFlow
 import com.example.playlistmaker.Presentation.utils.SingleEventLiveData
-import com.example.playlistmaker.creator.Creator
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
-    application: Application
-) : AndroidViewModel(application) {
-
-    private val trackInteractor = Creator.provideTrackInteractor()
+    private val trackInteractor: TrackInteractor
+) : ViewModel() {
 
     private val state = MutableLiveData<TrackListState>()
     fun getState(): LiveData<TrackListState> = state

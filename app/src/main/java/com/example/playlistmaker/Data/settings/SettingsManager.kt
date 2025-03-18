@@ -1,6 +1,5 @@
 package com.example.playlistmaker.Data.settings
 
-import android.content.Context
 import android.content.SharedPreferences
 
 const val DAYNIGHT_SWITCHER_KEY = "key_for_daynight_switcher"
