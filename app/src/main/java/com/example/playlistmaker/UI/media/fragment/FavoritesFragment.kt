@@ -30,6 +30,7 @@ class FavoritesFragment: Fragment() {
     }
 
     companion object {
-        private const val NUMBER = "favorites"
+
+        fun newInstance() = FavoritesFragment()
     }
 }

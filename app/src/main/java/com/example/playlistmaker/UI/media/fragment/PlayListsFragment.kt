@@ -23,4 +23,9 @@ class PlayListsFragment: Fragment() {
 
         return binding.root
     }
+
+    companion object {
+
+        fun newInstance() = PlayListsFragment()
+    }
 }
