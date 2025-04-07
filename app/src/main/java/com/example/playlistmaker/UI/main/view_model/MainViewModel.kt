@@ -15,12 +15,4 @@ class MainViewModel(private val interactor: SettingsInteractor) : ViewModel() {
     fun saveTheme(isDarkTheme: Boolean) {
         interactor.saveTheme(isDarkTheme)
     }
-
-    companion object {
-        fun getViewModelFactory(interactor: SettingsInteractor): ViewModelProvider.Factory = viewModelFactory {
-            initializer {
-                MainViewModel(interactor)
-            }
-        }
-    }
 }
