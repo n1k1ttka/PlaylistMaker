@@ -1,6 +1,6 @@
-package com.example.playlistmaker.UI.media.activity
+package com.example.playlistmaker.UI.player.activity
 
-import com.example.playlistmaker.UI.media.view_model.MediaViewModel
+import com.example.playlistmaker.UI.player.view_model.MediaViewModel
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle

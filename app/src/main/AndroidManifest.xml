@@ -23,7 +23,7 @@
             android:name=".UI.search.activity.SearchActivity"
             android:exported="false" />
         <activity
-            android:name=".UI.media.activity.MediaActivity"
+            android:name=".UI.player.activity.MediaActivity"
             android:exported="false" />
         <activity
             android:name=".UI.settings.activity.SettingsActivity"

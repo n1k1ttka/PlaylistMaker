@@ -7,19 +7,47 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import com.example.playlistmaker.Presentation.model.media.MediaPagerAdapter
 import com.example.playlistmaker.R
-import com.example.playlistmaker.UI.search.activity.SearchActivity
+import com.example.playlistmaker.databinding.ActivityMediaPlayerBinding
+import com.google.android.material.tabs.TabLayoutMediator
 
 class MediaPlayerActivity : AppCompatActivity() {
+
+    private lateinit var binding: ActivityMediaPlayerBinding
+    private lateinit var tabMediator: TabLayoutMediator
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        binding = ActivityMediaPlayerBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         enableEdgeToEdge()
-        setContentView(R.layout.activity_media_player)
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.viewPager)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+
+        binding.back.setOnClickListener {
+            finish()
+        }
+
+        binding.viewPager.adapter = MediaPagerAdapter(supportFragmentManager, lifecycle)
+
+        tabMediator = TabLayoutMediator(binding.tabLayout, binding.viewPager) { tab, position ->
+            when(position) {
+                0 -> tab.text = "Избранные треки"
+                1 -> tab.text = "Плейлисты"
+            }
+        }
+        tabMediator.attach()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        tabMediator.detach()
     }
 
     companion object {

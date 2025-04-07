@@ -105,7 +105,7 @@
             android:layout_marginTop="@dimen/padding_16"/>
 
         <Button
-            style="@style/SearchFrameButtonStyle"
+            style="@style/BlackWhiteButtonStyle"
             android:id="@+id/clear_history"
             android:layout_gravity="center_horizontal"
             android:layout_width="wrap_content"
@@ -141,12 +141,13 @@
                 tools:text="@string/no_internet"/>
 
             <Button
-                style="@style/SearchFrameButtonStyle"
+                style="@style/BlackWhiteButtonStyle"
                 android:id="@+id/refresh"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="@dimen/margin_24"
-                android:text="@string/refresh"/>
+                android:text="@string/refresh"
+                android:visibility="gone"/>
 
         </LinearLayout>
 

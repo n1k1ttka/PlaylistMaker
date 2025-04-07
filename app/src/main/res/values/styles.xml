@@ -24,13 +24,12 @@
         <item name="android:fontFamily">@font/ys_text_regular</item>
     </style>
 
-    <style name="SearchFrameButtonStyle">
+    <style name="BlackWhiteButtonStyle">
         <item name="android:textSize">14sp</item>
         <item name="android:fontFamily">@font/ys_text_medium</item>
         <item name="android:textAllCaps">false</item>
         <item name="android:backgroundTint">@color/black_white</item>
         <item name="cornerRadius">54dp</item>
-        <item name="android:visibility">gone</item>
     </style>
 
     <style name="MediaPlayerTextViewStyle">
