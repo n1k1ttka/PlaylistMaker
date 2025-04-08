@@ -11,7 +11,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_24"
-        android:text="Новый плейлист"
+        android:text="@string/new_playlist"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"/>
@@ -34,7 +34,7 @@
         android:textSize="@dimen/text_19"
         android:textColor="@color/black_white"
         android:gravity="center_horizontal"
-        android:text="Вы не создали ни одного плейлиста"
+        android:text="@string/playlists_not_ex"
         android:layout_marginTop="@dimen/padding_16"
         app:layout_constraintTop_toBottomOf="@+id/res_not_ex"
         app:layout_constraintStart_toStartOf="parent"

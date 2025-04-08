@@ -24,4 +24,10 @@
     <string name="year">Year</string>
     <string name="genre">Genre</string>
     <string name="country">Country</string>
+    <string name="mediateka">Media Library</string>
+    <string name="favorites">Favorite tracks</string>
+    <string name="playlists">Playlists</string>
+    <string name="playlists_not_ex">You have not created any playlists</string>
+    <string name="new_playlist">New playlist</string>
+    <string name="track_library_empty">Your media library is empty</string>
 </resources>

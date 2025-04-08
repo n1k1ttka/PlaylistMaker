@@ -27,7 +27,7 @@
             android:id="@+id/main_header"
             android:layout_gravity="center_vertical"
             android:paddingStart="4dp"
-            android:text="Медиатека"
+            android:text="@string/mediateka"
             android:fontFamily="@font/ys_text_medium"
             android:textColor="@color/black_white"
             android:textSize="@dimen/text_22"/>
@@ -40,6 +40,7 @@
         android:layout_height="wrap_content"
         android:background="@color/white_black"
         app:tabIndicatorColor="@color/black_white"
+        app:tabTextAppearance="@style/MyTabTextAppearance"
         app:tabTextColor="@color/black_white"/>
 
     <androidx.viewpager2.widget.ViewPager2
