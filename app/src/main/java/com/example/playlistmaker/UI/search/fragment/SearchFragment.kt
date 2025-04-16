@@ -1,61 +1,60 @@
-package com.example.playlistmaker.UI.search.activity
+package com.example.playlistmaker.UI.search.fragment
 
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.appcompat.app.AppCompatActivity.INPUT_METHOD_SERVICE
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
+import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.Domain.Track
 import com.example.playlistmaker.Presentation.model.search.StoryAdapter
 import com.example.playlistmaker.Presentation.model.search.TrackAdapter
 import com.example.playlistmaker.Presentation.state.TrackListState
 import com.example.playlistmaker.R
-import com.example.playlistmaker.UI.player.activity.MediaActivity
+import com.example.playlistmaker.UI.player.fragment.MediaFragment
 import com.example.playlistmaker.UI.search.view_model.SearchViewModel
-import com.example.playlistmaker.databinding.ActivitySearchBinding
+import com.example.playlistmaker.databinding.SearchFragmentBinding
 import kotlinx.coroutines.launch
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class SearchActivity : AppCompatActivity() {
+class SearchFragment: Fragment() {
 
-    private lateinit var binding: ActivitySearchBinding
+    private lateinit var binding: SearchFragmentBinding
 
     private val viewModel by viewModel<SearchViewModel>()
 
     private lateinit var adapter: TrackAdapter
     private lateinit var storyAdapter: StoryAdapter
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = SearchFragmentBinding.inflate(inflater, container, false)
 
-        binding = ActivitySearchBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        return binding.root
+    }
 
-        enableEdgeToEdge()
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
         adapter = TrackAdapter(emptyList(), viewModel::onTrackClick)
         storyAdapter = StoryAdapter(emptyList(), viewModel::triggerEvent)
 
-        binding.trackRecyclerView.layoutManager = LinearLayoutManager(this)
+        binding.trackRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.trackRecyclerView.adapter = storyAdapter
 
-        viewModel.getState().observe(this) { state ->
+        viewModel.getState().observe(viewLifecycleOwner) { state ->
             when (state) {
                 is TrackListState.Loading -> showLoading()
                 is TrackListState.Content -> showContent(state.tracks)
@@ -63,11 +62,6 @@ class SearchActivity : AppCompatActivity() {
                 is TrackListState.ZeroContent -> showNothingWasFound()
                 is TrackListState.Error -> showError(state.errorMessage)
             }
-        }
-
-        binding.back.setOnClickListener {
-            viewModel.saveListenedTracks()
-            finish()
         }
 
         binding.searching.addTextChangedListener(
@@ -80,7 +74,7 @@ class SearchActivity : AppCompatActivity() {
 
         binding.clearButton.setOnClickListener {
             binding.searching.setText("")
-            val inputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
+            val inputMethodManager = requireContext().getSystemService(INPUT_METHOD_SERVICE) as? InputMethodManager
             inputMethodManager?.hideSoftInputFromWindow(binding.clearButton.windowToken, 0)
             viewModel.searchDebounce(binding.searching.text.toString())
         }
@@ -111,13 +105,17 @@ class SearchActivity : AppCompatActivity() {
             binding.historyHint.isVisible = binding.clearHistory.isVisible
         }
 
-        viewModel.getTrackClickEvent().observe(this) { item ->
-            MediaActivity.show(this, item)
+        viewModel.getTrackClickEvent().observe(viewLifecycleOwner) { item ->
+            findNavController().navigate(
+                R.id.action_searchFragment_to_mediaFragment,
+                bundleOf(MediaFragment.ARGS_TRACK to item))
         }
 
         lifecycleScope.launch {
             viewModel.getListenedTrackClickEvent().collect { item ->
-                MediaActivity.show(this@SearchActivity, item)
+                findNavController().navigate(
+                    R.id.action_searchFragment_to_mediaFragment,
+                    bundleOf(MediaFragment.ARGS_TRACK to item))
             }
         }
     }
@@ -187,13 +185,6 @@ class SearchActivity : AppCompatActivity() {
     }
 
     private fun showMessage(message: String) {
-        Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-    }
-
-    companion object {
-        fun show(context: Context) {
-            val intent = Intent(context, SearchActivity::class.java)
-            context.startActivity(intent)
-        }
+        Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
     }
 }

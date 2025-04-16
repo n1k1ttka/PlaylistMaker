@@ -1,17 +1,14 @@
 package com.example.playlistmaker.UI.main.activity
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.setupWithNavController
 import com.example.playlistmaker.databinding.ActivityMainBinding
 import com.example.playlistmaker.Presentation.utils.isNightMode
+import com.example.playlistmaker.R
 import com.example.playlistmaker.UI.main.view_model.MainViewModel
-import com.example.playlistmaker.UI.media.activity.MediaPlayerActivity
-import com.example.playlistmaker.UI.search.activity.SearchActivity
-import com.example.playlistmaker.UI.settings.activity.SettingsActivity
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : AppCompatActivity() {
@@ -25,13 +22,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        enableEdgeToEdge()
+        val navHostFragment = supportFragmentManager.findFragmentById(R.id.container_view) as NavHostFragment
+        val navController = navHostFragment.navController
 
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
+        binding.bottomNavigationView.setupWithNavController(navController)
 
         if (viewModel.loadTheme()) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -44,18 +38,6 @@ class MainActivity : AppCompatActivity() {
                 AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
                 viewModel.saveTheme(false)
             }
-        }
-
-        binding.search.setOnClickListener {
-            SearchActivity.show(this)
-        }
-
-        binding.media.setOnClickListener {
-            MediaPlayerActivity.show(this)
-        }
-
-        binding.settings.setOnClickListener {
-            SettingsActivity.show(this)
         }
     }
 }
