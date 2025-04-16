@@ -7,7 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.Domain.Track
 import com.example.playlistmaker.Presentation.state.TrackListState
 import com.example.playlistmaker.Domain.search.TrackInteractor
-import com.example.playlistmaker.Presentation.model.STORYSIZE
+import com.example.playlistmaker.Presentation.model.search.STORYSIZE
 import com.example.playlistmaker.Presentation.utils.SingleEventFlow
 import com.example.playlistmaker.Presentation.utils.SingleEventLiveData
 import kotlinx.coroutines.Job
