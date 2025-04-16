@@ -1,53 +1,54 @@
-package com.example.playlistmaker.UI.player.activity
+package com.example.playlistmaker.UI.player.fragment
 
-import com.example.playlistmaker.UI.player.view_model.MediaViewModel
-import android.content.Context
-import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Log
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.Domain.Track
 import com.example.playlistmaker.Presentation.state.PlayerState
-import com.example.playlistmaker.R
 import com.example.playlistmaker.Presentation.utils.convertMillisToMinutesAndSeconds
 import com.example.playlistmaker.Presentation.utils.dateFormatter
-import com.example.playlistmaker.databinding.ActivityMediaBinding
+import com.example.playlistmaker.R
+import com.example.playlistmaker.UI.player.view_model.MediaViewModel
+import com.example.playlistmaker.databinding.MediaFragmentBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
-class MediaActivity : AppCompatActivity() {
+class MediaFragment: Fragment() {
 
-    private lateinit var binding: ActivityMediaBinding
+    private lateinit var binding: MediaFragmentBinding
 
     private val viewModel by viewModel<MediaViewModel>()
 
     private var mainThreadHandler: Handler? = null
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        binding = ActivityMediaBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
-        enableEdgeToEdge()
-
-        ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }
-
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = MediaFragmentBinding.inflate(inflater, container, false)
         mainThreadHandler = Handler(Looper.getMainLooper())
 
-        val track = savedInstanceState?.getParcelable<Track>("track") ?: intent.getParcelableExtra("track")
+        return binding.root
+    }
 
-        binding.back.setOnClickListener { finish() }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        val track = savedInstanceState?.getParcelable<Track>(ARGS_TRACK) ?: requireArguments().getParcelable(ARGS_TRACK)
+
+        binding.back.setOnClickListener {
+            if (isAdded) {
+                parentFragmentManager.popBackStack()
+            }
+        }
 
         binding.play.setOnClickListener {
             viewModel.playbackControl()
@@ -75,7 +76,7 @@ class MediaActivity : AppCompatActivity() {
             Log.e("MediaActivity", "Track data is null")
         }
 
-        viewModel.playerState.observe(this) { state ->
+        viewModel.playerState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is PlayerState.Playing -> {
                     binding.play.setImageResource(R.drawable.pause)
@@ -100,7 +101,7 @@ class MediaActivity : AppCompatActivity() {
 
     override fun onSaveInstanceState(outState: Bundle) {
         super.onSaveInstanceState(outState)
-        val track = intent.getParcelableExtra<Track>("track")
+        val track = requireArguments().getParcelable<Track>("track")
         if (track != null) {
             outState.putParcelable("track", track)
         }
@@ -108,16 +109,19 @@ class MediaActivity : AppCompatActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        if (isFinishing) {
+        if (isRemoving) {
             viewModel.releasePlayer()
         }
     }
 
     companion object {
-        fun show(context: Context, track: Track) {
-            val intent = Intent(context, MediaActivity::class.java)
-            intent.putExtra("track", track)
-            context.startActivity(intent)
+
+        const val ARGS_TRACK = "track_id"
+
+        fun newInstance(track: Track): MediaFragment {
+            return MediaFragment().apply {
+                arguments = bundleOf(ARGS_TRACK to track)
+            }
         }
     }
 }

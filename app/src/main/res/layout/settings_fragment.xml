@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/main"
     android:orientation="vertical"
-    android:background="@color/white_black">
+    android:background="@color/white_black"
+    tools:context="com.example.playlistmaker.UI.settings.fragment.SettingsFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -14,21 +16,13 @@
         android:orientation="horizontal"
         android:layout_marginBottom="24dp">
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/back"
-            android:layout_gravity="center_vertical"
-            android:padding="20dp"
-            android:scaleType="centerCrop"
-            android:src="@drawable/ic_arrow_back"/>
-
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/main_header"
-            android:layout_gravity="center_vertical"
-            android:paddingStart="4dp"
+            android:layout_marginTop="14dp"
+            android:layout_marginStart="@dimen/padding_16"
+            android:layout_marginBottom="@dimen/padding_16"
             android:text="@string/settings"
             android:textColor="@color/black_white"
             android:textSize="@dimen/text_22"/>
@@ -46,13 +40,13 @@
             android:layout_height="wrap_content"
             android:paddingHorizontal="@dimen/padding_16"
             android:paddingVertical="@dimen/padding_10">
-            
+
             <TextView
                 style="@style/SettingsTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/dark_theme"/>
-            
+
             <androidx.appcompat.widget.SwitchCompat
                 android:id="@+id/mode_switch"
                 android:layout_width="wrap_content"
