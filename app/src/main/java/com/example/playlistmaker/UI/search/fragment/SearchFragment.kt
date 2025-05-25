@@ -12,7 +12,9 @@ import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.playlistmaker.Domain.Track
@@ -111,11 +113,13 @@ class SearchFragment: Fragment() {
                 bundleOf(MediaFragment.ARGS_TRACK to item))
         }
 
-        lifecycleScope.launch {
-            viewModel.getListenedTrackClickEvent().collect { item ->
-                findNavController().navigate(
-                    R.id.action_searchFragment_to_mediaFragment,
-                    bundleOf(MediaFragment.ARGS_TRACK to item))
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.getListenedTrackClickEvent().collect { item ->
+                    findNavController().navigate(
+                        R.id.action_searchFragment_to_mediaFragment,
+                        bundleOf(MediaFragment.ARGS_TRACK to item))
+                }
             }
         }
     }

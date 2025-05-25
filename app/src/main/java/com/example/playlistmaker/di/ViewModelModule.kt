@@ -19,16 +19,12 @@ val viewModelModule = module {
         MainViewModel(get())
     }
 
-    factory <MediaPlayer> {
+    factory <MediaPlayer> { // Можно ли сделать это single? Мне кажется что factory не оптимальное решение. Найти в интернете подсказки не смог
         MediaPlayer()
     }
 
-    single<Handler> {
-        Handler(Looper.getMainLooper())
-    }
-
     viewModel {
-        MediaViewModel(get(), get())
+        MediaViewModel(get())
     }
 
     viewModel {
