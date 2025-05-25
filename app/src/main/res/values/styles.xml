@@ -42,4 +42,10 @@
         <item name="android:textSize">14sp</item>
         <item name="fontFamily">@font/ys_text_medium</item>
     </style>
+
+    <style name="BottomNavigationTheme" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="android:background">@color/white_black</item>
+        <item name="itemIconTint">@drawable/bottom_nav_icon_colors</item>
+        <item name="itemTextColor">@drawable/bottom_nav_icon_colors</item>
+    </style>
 </resources>
