@@ -13,6 +13,7 @@ import com.example.playlistmaker.Presentation.utils.SingleEventLiveData
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -114,21 +115,24 @@ class SearchViewModel(
 
     fun remoteRequest(inputEditText: String) {
         state.postValue(TrackListState.Loading)
-        trackInteractor.loadTracks(inputEditText, object : TrackInteractor.TracksConsumer {
-            override fun consume(tracks: List<Track>?) {
-                if (tracks != null) {
-                    if (tracks.isNotEmpty()) {
-                        _songs.clear()
-                        _songs.addAll(tracks)
-                        state.postValue(TrackListState.Content(_songs))
+
+        viewModelScope.launch {
+            trackInteractor.loadTracks(inputEditText)
+                .collect { pair ->
+                    val tracks = pair.first
+                    val error = pair.second
+                    if (error != null) state.postValue(TrackListState.Error(pair.second.toString()))
+                    else if (tracks != null) {
+                        if (tracks.isNotEmpty()) {
+                            _songs.clear()
+                            _songs.addAll(tracks)
+                            state.postValue(TrackListState.Content(_songs))
+                        }
                     } else {
                         state.postValue(TrackListState.ZeroContent)
                     }
-                } else {
-                    state.postValue(TrackListState.Error("Проверьте подключение к сети"))
                 }
-            }
-        })
+        }
     }
 
     companion object {

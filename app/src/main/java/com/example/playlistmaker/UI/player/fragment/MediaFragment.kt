@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -80,15 +79,18 @@ class MediaFragment: Fragment() {
             when (state) {
                 is PlayerState.Playing -> {
                     binding.play.setImageResource(R.drawable.pause)
-                    binding.time.text = state.timeLeft
+                    binding.time.text = state.progress
                 }
-                PlayerState.Paused -> {
+                is PlayerState.Paused -> {
                     binding.play.setImageResource(R.drawable.play)
+                    binding.time.text = state.progress
                 }
-                PlayerState.Prepared -> {
+                is PlayerState.Prepared -> {
                     binding.play.isEnabled = true
+                    binding.play.setImageResource(R.drawable.play)
+                    binding.time.text = state.progress
                 }
-                PlayerState.Default -> {}
+                is PlayerState.Default -> {}
             }
         }
     }
@@ -117,11 +119,5 @@ class MediaFragment: Fragment() {
     companion object {
 
         const val ARGS_TRACK = "track_id"
-
-        fun newInstance(track: Track): MediaFragment {
-            return MediaFragment().apply {
-                arguments = bundleOf(ARGS_TRACK to track)
-            }
-        }
     }
 }

@@ -10,7 +10,8 @@ const val STORYSIZE = 10
 
 class TrackAdapter(
     private var tracks: List<Track>,
-    private val onItemClick: (Track) -> Unit
+    private val onItemClick: (Track) -> Unit,
+    private val animation: () -> Unit
 ): RecyclerView.Adapter<TrackViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
         return TrackViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.song_item, parent, false))
@@ -21,6 +22,7 @@ class TrackAdapter(
     override fun onBindViewHolder(holder: TrackViewHolder, position: Int) {
         holder.bind(tracks[position])
         holder.itemView.setOnClickListener {
+            animation()
             onItemClick(tracks[position])
         }
     }

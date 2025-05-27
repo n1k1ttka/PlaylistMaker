@@ -1,8 +1,10 @@
 package com.example.playlistmaker.UI.main.activity
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
+import androidx.core.view.isVisible
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.example.playlistmaker.databinding.ActivityMainBinding
@@ -39,5 +41,15 @@ class MainActivity : AppCompatActivity() {
                 viewModel.saveTheme(false)
             }
         }
+    }
+
+    fun animateBottomNavigationView() {
+        binding.bottomNavigationView.visibility = View.GONE
+        binding.divider.visibility = View.GONE
+    }
+
+    fun checkBottomNavigationView() {
+        binding.bottomNavigationView.isVisible = true
+        binding.divider.isVisible = true
     }
 }
