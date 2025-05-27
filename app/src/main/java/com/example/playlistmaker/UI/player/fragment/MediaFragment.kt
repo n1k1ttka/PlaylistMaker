@@ -7,7 +7,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
@@ -88,6 +87,8 @@ class MediaFragment: Fragment() {
                 }
                 is PlayerState.Prepared -> {
                     binding.play.isEnabled = true
+                    binding.play.setImageResource(R.drawable.play)
+                    binding.time.text = state.progress
                 }
                 is PlayerState.Default -> {}
             }

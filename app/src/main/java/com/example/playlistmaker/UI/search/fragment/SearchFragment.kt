@@ -22,6 +22,7 @@ import com.example.playlistmaker.Presentation.model.search.StoryAdapter
 import com.example.playlistmaker.Presentation.model.search.TrackAdapter
 import com.example.playlistmaker.Presentation.state.TrackListState
 import com.example.playlistmaker.R
+import com.example.playlistmaker.UI.main.activity.MainActivity
 import com.example.playlistmaker.UI.player.fragment.MediaFragment
 import com.example.playlistmaker.UI.search.view_model.SearchViewModel
 import com.example.playlistmaker.databinding.SearchFragmentBinding
@@ -34,8 +35,8 @@ class SearchFragment: Fragment() {
 
     private val viewModel by viewModel<SearchViewModel>()
 
-    private lateinit var adapter: TrackAdapter
-    private lateinit var storyAdapter: StoryAdapter
+    private var adapter: TrackAdapter? = null
+    private var storyAdapter: StoryAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -49,9 +50,10 @@ class SearchFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as MainActivity).checkBottomNavigationView()
 
-        adapter = TrackAdapter(emptyList(), viewModel::onTrackClick)
-        storyAdapter = StoryAdapter(emptyList(), viewModel::triggerEvent)
+        adapter = TrackAdapter(emptyList(), viewModel::onTrackClick) { (activity as MainActivity).animateBottomNavigationView() }
+        storyAdapter = StoryAdapter(emptyList(), viewModel::triggerEvent) { (activity as MainActivity).animateBottomNavigationView() }
 
         binding.trackRecyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.trackRecyclerView.adapter = storyAdapter
@@ -142,7 +144,7 @@ class SearchFragment: Fragment() {
 
     private fun showContent(tracks: List<Track>) {
 
-        adapter.updateData(tracks)
+        adapter?.updateData(tracks)
         binding.trackRecyclerView.adapter = adapter
 
         binding.historyHint.isVisible = false
@@ -152,7 +154,7 @@ class SearchFragment: Fragment() {
 
     private fun showStory(story: List<Track>) {
 
-        storyAdapter.updateData(story)
+        storyAdapter?.updateData(story)
         binding.trackRecyclerView.adapter = storyAdapter
 
         binding.historyHint.isVisible = story.isNotEmpty()
@@ -190,5 +192,12 @@ class SearchFragment: Fragment() {
 
     private fun showMessage(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_LONG).show()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        adapter = null
+        storyAdapter = null
+        binding.trackRecyclerView.adapter = null
     }
 }

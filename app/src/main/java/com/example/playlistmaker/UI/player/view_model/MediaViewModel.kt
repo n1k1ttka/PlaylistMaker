@@ -50,7 +50,8 @@ class MediaViewModel(
         }
 
         mediaPlayer.setOnCompletionListener {
-            _playerState.value = PlayerState.Prepared()
+            timerJob?.cancel()
+            _playerState.postValue(PlayerState.Prepared())
         }
 
         mediaPlayer.setOnErrorListener { _, what, extra ->
@@ -88,10 +89,9 @@ class MediaViewModel(
     private fun startTimer() {
         timerJob = viewModelScope.launch {
             while (mediaPlayer.isPlaying) {
-                delay(300L)
+                delay(100L)
                 _playerState.postValue(PlayerState.Playing(getCurrentPlayerPosition()))
             }
-            pausePlayer()
         }
     }
 
