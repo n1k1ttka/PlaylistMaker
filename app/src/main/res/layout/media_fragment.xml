@@ -89,7 +89,7 @@
         android:id="@+id/like"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/like"
+        android:src="@drawable/like_disabled"
         android:background="@color/transparent"
         app:layout_constraintStart_toEndOf="@id/play"
         app:layout_constraintEnd_toEndOf="parent"

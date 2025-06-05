@@ -1,8 +1,11 @@
 package com.example.playlistmaker.di
 
-import com.example.playlistmaker.Data.search.impl.HistoryRepositoryImpl
-import com.example.playlistmaker.Data.search.impl.TrackRepositoryImpl
-import com.example.playlistmaker.Data.settings.impl.SettingsRepositoryImpl
+import com.example.playlistmaker.data.converters.TrackDbConverter
+import com.example.playlistmaker.data.db.impl.FavoritesRepositoryImpl
+import com.example.playlistmaker.data.search.impl.HistoryRepositoryImpl
+import com.example.playlistmaker.data.search.impl.TrackRepositoryImpl
+import com.example.playlistmaker.data.settings.impl.SettingsRepositoryImpl
+import com.example.playlistmaker.Domain.db.FavoritesRepository
 import com.example.playlistmaker.Domain.search.HistoryRepository
 import com.example.playlistmaker.Domain.search.TrackRepository
 import com.example.playlistmaker.Domain.settings.SettingsRepository
@@ -21,4 +24,10 @@ val repositoryModule = module {
     single<SettingsRepository> {
         SettingsRepositoryImpl(get())
     }
+
+    single<FavoritesRepository> {
+        FavoritesRepositoryImpl(get(), get())
+    }
+
+    factory { TrackDbConverter() }
 }
