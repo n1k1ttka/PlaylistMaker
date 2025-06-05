@@ -5,6 +5,7 @@ import android.os.Handler
 import android.os.Looper
 import com.example.playlistmaker.R
 import com.example.playlistmaker.UI.main.view_model.MainViewModel
+import com.example.playlistmaker.UI.media.view_model.FavoritesViewModel
 import com.example.playlistmaker.UI.player.view_model.MediaViewModel
 import com.example.playlistmaker.UI.search.view_model.SearchViewModel
 import com.example.playlistmaker.UI.settings.view_model.SettingsViewModel
@@ -46,5 +47,9 @@ val viewModelModule = module {
             get(named("thanksDevelopers")),
             get(named("yaOffer"))
         )
+    }
+
+    viewModel {
+        FavoritesViewModel(get())
     }
 }

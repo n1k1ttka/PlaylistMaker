@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.Domain.Track
 import com.example.playlistmaker.Domain.db.FavoritesInteractor
 import com.example.playlistmaker.Presentation.state.PlayerState
-import com.example.playlistmaker.Presentation.utils.SingleEventLiveData
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -26,8 +25,8 @@ class MediaViewModel(
     private val _playerState = MutableLiveData<PlayerState>(PlayerState.Default())
     val playerState: LiveData<PlayerState> = _playerState
 
-    private val _likeState = MutableLiveData(false)
-    fun getLikeState(): LiveData<Boolean> = _likeState
+    private val likeState = MutableLiveData(false)
+    fun getLikeState(): LiveData<Boolean> = likeState
 
     private var currentPosition: Int = 0
     private var isPlaying: Boolean = false
@@ -130,7 +129,7 @@ class MediaViewModel(
     private fun checkFavorites(track: Track) {
         viewModelScope.launch {
             favoritesInteractor.favoritesTracks().collect { tracks ->
-                _likeState.postValue(tracks.contains(track))
+                likeState.postValue(tracks.contains(track))
             }
         }
     }
@@ -138,10 +137,12 @@ class MediaViewModel(
     fun like(track: Track) {
         viewModelScope.launch {
             if (favoritesInteractor.addFavorite(track) == -1L) {
-                _likeState.postValue(false)
+                Log.d("CheckFavorTracks","${favoritesInteractor.addFavorite(track)}")
+                likeState.postValue(false)
                 favoritesInteractor.deleteFromFavorites(track)
             } else {
-                _likeState.postValue(true)
+                Log.d("CheckFavorTracks","${favoritesInteractor.addFavorite(track)}")
+                likeState.postValue(true)
             }
         }
     }
