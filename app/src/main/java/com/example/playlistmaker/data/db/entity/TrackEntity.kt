@@ -1,8 +1,12 @@
-package com.example.playlistmaker.Data.dto
+package com.example.playlistmaker.data.db.entity
 
-data class TrackDto(
+import androidx.room.Entity
+import androidx.room.PrimaryKey
+
+@Entity(tableName = "favorites_table")
+data class TrackEntity(
     val previewUrl: String,
-    val trackId: Int,
+    @PrimaryKey val trackId: Int,
     val trackName: String, // Название композиции
     val collectionName: String, // Альбом
     val artistName: String, // Имя исполнителя

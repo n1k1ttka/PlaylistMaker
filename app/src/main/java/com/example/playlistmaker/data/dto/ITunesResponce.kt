@@ -1,4 +1,4 @@
-package com.example.playlistmaker.Data.dto
+package com.example.playlistmaker.data.dto
 
 data class ITunesResponce(
     val resultCount: Int,

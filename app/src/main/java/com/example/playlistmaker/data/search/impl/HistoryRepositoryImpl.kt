@@ -1,7 +1,7 @@
-package com.example.playlistmaker.Data.search.impl
+package com.example.playlistmaker.data.search.impl
 
-import com.example.playlistmaker.Data.search.TrackManager
-import com.example.playlistmaker.Data.dto.TrackDto
+import com.example.playlistmaker.data.search.TrackManager
+import com.example.playlistmaker.data.dto.TrackDto
 import com.example.playlistmaker.Domain.search.HistoryRepository
 import com.example.playlistmaker.Domain.Track
 

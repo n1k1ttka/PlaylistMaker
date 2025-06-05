@@ -1,6 +1,6 @@
-package com.example.playlistmaker.Data.settings.impl
+package com.example.playlistmaker.data.settings.impl
 
-import com.example.playlistmaker.Data.settings.SettingsManager
+import com.example.playlistmaker.data.settings.SettingsManager
 import com.example.playlistmaker.Domain.settings.SettingsRepository
 
 class SettingsRepositoryImpl(

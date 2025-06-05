@@ -2,11 +2,13 @@ package com.example.playlistmaker.di
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.playlistmaker.Data.network.ITunesApiService
-import com.example.playlistmaker.Data.network.NetworkClient
-import com.example.playlistmaker.Data.network.TrackNetworkClient
-import com.example.playlistmaker.Data.search.TrackManager
-import com.example.playlistmaker.Data.settings.SettingsManager
+import androidx.room.Room
+import com.example.playlistmaker.data.db.AppDatabase
+import com.example.playlistmaker.data.network.ITunesApiService
+import com.example.playlistmaker.data.network.NetworkClient
+import com.example.playlistmaker.data.network.TrackNetworkClient
+import com.example.playlistmaker.data.search.TrackManager
+import com.example.playlistmaker.data.settings.SettingsManager
 import com.google.gson.Gson
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.qualifier.named
@@ -46,5 +48,9 @@ val dataModule = module {
 
     single {
         SettingsManager(get(named("settings_prefs")))
+    }
+
+    single {
+        Room.databaseBuilder(androidContext(), AppDatabase::class.java, "database.db").build()
     }
 }
