@@ -1,5 +1,6 @@
 package com.example.playlistmaker.data.db.entity
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -15,4 +16,5 @@ data class TrackEntity(
     val trackTimeMillis: Long, // Продолжительность трека
     val artworkUrl100: String, // Ссылка на изображение обложки
     val releaseDate: String, // Дата релиза
+    @ColumnInfo(name = "created_at") val createdAt: Long = System.currentTimeMillis()
 )
