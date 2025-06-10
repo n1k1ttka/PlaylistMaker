@@ -25,7 +25,6 @@ class MediaFragment: Fragment() {
 
     private val viewModel by viewModel<MediaViewModel>()
 
-    private var mainThreadHandler: Handler? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,8 +32,7 @@ class MediaFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View {
         binding = MediaFragmentBinding.inflate(inflater, container, false)
-        mainThreadHandler = Handler(Looper.getMainLooper())
-
+        
         return binding.root
     }
 
@@ -70,7 +68,18 @@ class MediaFragment: Fragment() {
                 .placeholder(R.drawable.bigplaceholder)
                 .into(binding.albumImage)
 
-            viewModel.preparePlayer(track.previewUrl)
+            viewModel.getLikeState().observe(viewLifecycleOwner) {state ->
+                when(state) {
+                    true -> binding.like.setImageResource(R.drawable.like_enabled)
+                    false -> binding.like.setImageResource(R.drawable.like_disabled)
+                }
+            }
+
+            binding.like.setOnClickListener {
+                viewModel.like(track)
+            }
+
+            viewModel.preparePlayer(track)
         } else {
             Log.e("MediaActivity", "Track data is null")
         }

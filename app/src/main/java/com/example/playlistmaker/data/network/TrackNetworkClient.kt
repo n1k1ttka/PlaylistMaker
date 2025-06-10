@@ -1,7 +1,7 @@
-package com.example.playlistmaker.Data.network
+package com.example.playlistmaker.data.network
 
-import com.example.playlistmaker.Data.dto.ITunesRequest
-import com.example.playlistmaker.Data.dto.Responce
+import com.example.playlistmaker.data.dto.ITunesRequest
+import com.example.playlistmaker.data.dto.Responce
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 

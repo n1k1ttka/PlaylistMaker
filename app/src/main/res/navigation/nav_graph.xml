@@ -22,7 +22,11 @@
         android:id="@+id/mediaPlayerFragment2"
         android:name="com.example.playlistmaker.UI.media.fragment.MediaPlayerFragment"
         android:label="media_player_fragment"
-        tools:layout="@layout/media_player_fragment" />
+        tools:layout="@layout/media_player_fragment" >
+        <action
+            android:id="@+id/action_mediaPlayerFragment2_to_mediaFragment2"
+            app:destination="@id/mediaFragment" />
+    </fragment>
     <fragment
         android:id="@+id/mediaFragment"
         android:name="com.example.playlistmaker.UI.player.fragment.MediaFragment"
