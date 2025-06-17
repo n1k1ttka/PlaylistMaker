@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="8dp">
+    
+    <ImageView
+        android:id="@+id/playlist_image"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+        android:layout_marginEnd="@dimen/padding_8"
+        tools:src="@drawable/ic_placeholder"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="start">
+
+        <TextView
+            android:id="@+id/playlist_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="Название плейлиста"
+            android:textColor="@color/black_white"
+            android:textSize="@dimen/text_16"
+            android:fontFamily="@font/ys_text_regular"/>
+
+        <TextView
+            android:id="@+id/track_count"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="100500 треков"
+            android:textColor="@color/music"
+            android:textSize="@dimen/text_11"
+            android:fontFamily="@font/ys_text_regular"/>
+
+    </LinearLayout>
+    
+</LinearLayout>

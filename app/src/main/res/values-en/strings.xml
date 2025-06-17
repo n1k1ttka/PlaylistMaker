@@ -30,4 +30,14 @@
     <string name="playlists_not_ex">You have not created any playlists</string>
     <string name="new_playlist">New playlist</string>
     <string name="track_library_empty">Your media library is empty</string>
+    <string name="playlist_name">Playlist name*</string>
+    <string name="playlist_description">Description</string>
+    <string name="create">Create</string>
+    <string name="playlist_created">Playlist %1$s created</string>
+    <string name="added_to_playlist">Added to playlist %1$s</string>
+    <string name="not_added_to_playlist">The track has already been added to the playlist %1$s</string>
+    <string name="finish_to_create_playlist">Finish to create playlist?</string>
+    <string name="all_unsaved_data_will_be_lost">All unsaved data will be lost.</string>
+    <string name="finish">Finish</string>
+    <string name="cancel">Cancel</string>
 </resources>

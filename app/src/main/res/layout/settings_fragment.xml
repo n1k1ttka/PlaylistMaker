@@ -20,10 +20,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:id="@+id/main_header"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="@dimen/padding_14"
             android:layout_marginStart="@dimen/padding_16"
             android:layout_marginBottom="@dimen/padding_16"
             android:text="@string/settings"
+            android:fontFamily="@font/ys_text_medium"
             android:textColor="@color/black_white"
             android:textSize="@dimen/text_22"/>
 

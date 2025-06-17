@@ -7,21 +7,30 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.Domain.Track
+import com.example.playlistmaker.Presentation.model.playlists.MiniPlaylistAdapter
+import com.example.playlistmaker.Presentation.model.playlists.PlaylistAdapter
 import com.example.playlistmaker.Presentation.state.PlayerState
 import com.example.playlistmaker.Presentation.utils.convertMillisToMinutesAndSeconds
 import com.example.playlistmaker.Presentation.utils.dateFormatter
 import com.example.playlistmaker.R
+import com.example.playlistmaker.UI.main.activity.MainActivity
 import com.example.playlistmaker.UI.player.view_model.MediaViewModel
 import com.example.playlistmaker.databinding.MediaFragmentBinding
+import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MediaFragment: Fragment() {
 
     private lateinit var binding: MediaFragmentBinding
+    private var adapter: MiniPlaylistAdapter? = null
 
     private val viewModel by viewModel<MediaViewModel>()
 
@@ -41,9 +50,13 @@ class MediaFragment: Fragment() {
 
         val track = savedInstanceState?.getParcelable<Track>(ARGS_TRACK) ?: requireArguments().getParcelable(ARGS_TRACK)
 
+        val bottomSheetContainer = binding.standardBottomSheet
+        val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
+        bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+
         binding.back.setOnClickListener {
             if (isAdded) {
-                parentFragmentManager.popBackStack()
+                findNavController().popBackStack()
             }
         }
 
@@ -101,6 +114,65 @@ class MediaFragment: Fragment() {
                 }
                 is PlayerState.Default -> {}
             }
+        }
+
+        binding.playlists.setOnClickListener {
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
+            viewModel.getPlaylists()
+        }
+
+        adapter = MiniPlaylistAdapter(emptyList(), viewModel::onPlaylistClick)
+        binding.playlistsList.layoutManager = LinearLayoutManager(context)
+        binding.playlistsList.adapter = adapter
+
+        viewModel.getPlaylistState().observe(viewLifecycleOwner) { state ->
+            when(state.isNotEmpty()){
+                true -> {
+                    adapter?.updateData(state)
+                    binding.playlistsList.isVisible = true
+                    binding.resNotEx.visibility = View.GONE
+                    binding.errorText.visibility = View.GONE
+                }
+                false -> {
+                    binding.playlistsList.visibility = View.GONE
+                    binding.resNotEx.isVisible = true
+                    binding.errorText.isVisible = true
+                }
+            }
+        }
+
+        viewModel.getAddedInPlaylist().observe(viewLifecycleOwner) { state ->
+            when(state) {
+                true -> {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                    binding.playlistsList.adapter?.notifyDataSetChanged()
+                    Snackbar.make(
+                        requireView(),
+                        getString(R.string.added_to_playlist, viewModel.getPlaylistClickEvent().value?.playlistName),
+                        Snackbar.LENGTH_SHORT
+                    )
+                        .setBackgroundTint(resources.getColor(R.color.black_white))
+                        .setTextColor(resources.getColor(R.color.white_black))
+                        .show()
+                }
+                false -> {
+                    Snackbar.make(
+                        requireView(),
+                        getString(R.string.not_added_to_playlist, viewModel.getPlaylistClickEvent().value?.playlistName),
+                        Snackbar.LENGTH_SHORT
+                    )
+                        .setBackgroundTint(resources.getColor(R.color.black_white))
+                        .setTextColor(resources.getColor(R.color.white_black))
+                        .show()
+                }
+            }
+        }
+
+        binding.newPlaylist.setOnClickListener {
+            (activity as MainActivity).animateBottomNavigationView()
+            findNavController().navigate(
+                R.id.action_mediaFragment_to_newPlayListFragment
+            )
         }
     }
 

@@ -6,6 +6,7 @@
     <!-- Custom colors -->
     <color name="transparent">#00000000</color>
     <color name="grey">#AEAFB4</color>
+    <color name="blue">#3772E7</color>
 
     <!-- Custom colors day/night -->
     <color name="nav_icons">#3772E7</color>
@@ -15,4 +16,5 @@
     <color name="hint_color">#AEAFB4</color>
     <color name="music">#AEAFB4</color>
     <color name="likes_and_playlists">#1A1B22</color>
+    <color name="bottomsheet_handle">#E6E8EB</color>
 </resources>

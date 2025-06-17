@@ -8,6 +8,7 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.example.playlistmaker.R
 import com.example.playlistmaker.Domain.Track
+import com.example.playlistmaker.Presentation.utils.dpToPx
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -26,7 +27,7 @@ class TrackViewHolder(private val item: View): RecyclerView.ViewHolder(item) {
         Glide.with(item.context)
             .load(model.artworkUrl100)
             //.centerCrop()
-            .transform(RoundedCorners(2))
+            .transform(RoundedCorners(2.dpToPx(item.context)))
             .placeholder(R.drawable.ic_placeholder)
             .into(artworkUrl100)
     }

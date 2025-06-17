@@ -2,12 +2,14 @@ package com.example.playlistmaker.data.db.entity
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
+import androidx.room.ForeignKey
+import androidx.room.Index
 import androidx.room.PrimaryKey
 
-@Entity(tableName = "favorites_table")
+@Entity(tableName = "playlist_tracks_table")
 data class TrackEntity(
     val previewUrl: String,
-    @PrimaryKey val trackId: Int,
+    @PrimaryKey @ColumnInfo(name = "track_id") val trackId: Int,
     val trackName: String, // Название композиции
     val collectionName: String, // Альбом
     val artistName: String, // Имя исполнителя
@@ -16,5 +18,4 @@ data class TrackEntity(
     val trackTimeMillis: Long, // Продолжительность трека
     val artworkUrl100: String, // Ссылка на изображение обложки
     val releaseDate: String, // Дата релиза
-    @ColumnInfo(name = "created_at") val createdAt: Long = System.currentTimeMillis()
 )

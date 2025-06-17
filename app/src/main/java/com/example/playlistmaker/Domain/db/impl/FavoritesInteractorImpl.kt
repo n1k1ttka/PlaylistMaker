@@ -1,9 +1,9 @@
 package com.example.playlistmaker.Domain.db.impl
 
-import com.example.playlistmaker.data.dto.TrackDto
 import com.example.playlistmaker.Domain.Track
 import com.example.playlistmaker.Domain.db.FavoritesInteractor
 import com.example.playlistmaker.Domain.db.FavoritesRepository
+import com.example.playlistmaker.data.dto.FavoriteDto
 import kotlinx.coroutines.flow.Flow
 
 class FavoritesInteractorImpl(
@@ -15,7 +15,7 @@ class FavoritesInteractorImpl(
 
     override suspend fun addFavorite(track: Track): Long {
         return favoritesRepository.addFavorite(
-            TrackDto(
+            FavoriteDto(
                 track.previewUrl,
                 track.trackId,
                 track.trackName,
@@ -32,7 +32,7 @@ class FavoritesInteractorImpl(
 
     override suspend fun deleteFromFavorites(track: Track) {
         favoritesRepository.deleteFromFavorites(
-            TrackDto(
+            FavoriteDto(
                 track.previewUrl,
                 track.trackId,
                 track.trackName,

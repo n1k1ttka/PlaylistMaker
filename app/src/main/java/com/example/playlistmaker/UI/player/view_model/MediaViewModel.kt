@@ -6,9 +6,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.playlistmaker.Domain.Playlist
 import com.example.playlistmaker.Domain.Track
 import com.example.playlistmaker.Domain.db.FavoritesInteractor
+import com.example.playlistmaker.Domain.db.PlaylistInteractor
+import com.example.playlistmaker.Domain.db.PlaylistTrackInteractor
 import com.example.playlistmaker.Presentation.state.PlayerState
+import com.example.playlistmaker.Presentation.utils.SingleEventLiveData
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -17,21 +21,35 @@ import java.util.Locale
 
 class MediaViewModel(
     private val mediaPlayer: MediaPlayer,
-    private val favoritesInteractor: FavoritesInteractor
+    private val favoritesInteractor: FavoritesInteractor,
+    private val playlistsInteractor: PlaylistInteractor,
+    private val playlistTrackInteractor: PlaylistTrackInteractor
 ) : ViewModel() {
 
+    private var isClickAllowed = true
+    private var clickJob: Job? = null
     private var timerJob: Job? = null
 
     private val _playerState = MutableLiveData<PlayerState>(PlayerState.Default())
     val playerState: LiveData<PlayerState> = _playerState
 
+    private val playlistState = MutableLiveData<List<Playlist>>()
+    fun getPlaylistState(): LiveData<List<Playlist>> = playlistState
+
+    private val playlistClickEvent = SingleEventLiveData<Playlist>()
+    fun getPlaylistClickEvent(): LiveData<Playlist> = playlistClickEvent
+
     private val likeState = MutableLiveData(false)
     fun getLikeState(): LiveData<Boolean> = likeState
+
+    private val addedInPlaylist = MutableLiveData<Boolean>()
+    fun getAddedInPlaylist(): LiveData<Boolean> = addedInPlaylist
 
     private var currentPosition: Int = 0
     private var isPlaying: Boolean = false
     private var rotatePlaying: Boolean = false
     private var currentTrackUrl: String? = null
+    private var currentTrack: Track? = null
 
     fun preparePlayer(track: Track) {
         checkFavorites(track)
@@ -41,6 +59,7 @@ class MediaViewModel(
         }
 
         currentTrackUrl = track.previewUrl
+        currentTrack = track
 
         try {
             mediaPlayer.reset()
@@ -145,6 +164,37 @@ class MediaViewModel(
                 likeState.postValue(true)
             }
         }
+    }
+
+    fun getPlaylists(){
+        viewModelScope.launch {
+            playlistsInteractor.getPlaylists().collect() { playlists ->
+                playlistState.postValue(playlists)
+            }
+        }
+    }
+
+    fun onPlaylistClick(playlist: Playlist) {
+        if (clickDebounce()) {
+            viewModelScope.launch {
+                currentTrack?.let {
+                    playlistClickEvent.postValue(playlist)
+                    addedInPlaylist.postValue(playlistTrackInteractor.insertTrackToPlaylist(currentTrack!!, playlist.id) != -1L)
+                }
+            }
+        }
+    }
+
+    private fun clickDebounce(): Boolean {
+        val current = isClickAllowed
+        if (isClickAllowed) {
+            isClickAllowed = false
+            clickJob = viewModelScope.launch {
+                delay(2000L)
+                isClickAllowed = true
+            }
+        }
+        return current
     }
 
     override fun onCleared() {
