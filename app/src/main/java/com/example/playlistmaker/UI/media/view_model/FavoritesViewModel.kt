@@ -4,8 +4,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playlistmaker.Domain.Track
 import com.example.playlistmaker.Domain.db.FavoritesInteractor
+import com.example.playlistmaker.Presentation.mappers.toParcelable
+import com.example.playlistmaker.Presentation.model.ParcelableTrack
 import com.example.playlistmaker.Presentation.utils.SingleEventLiveData
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -15,16 +16,16 @@ class FavoritesViewModel(
     private val favoritesInteractor: FavoritesInteractor
 ): ViewModel() {
 
-    private val trackClickEvent = SingleEventLiveData<Track>()
-    fun getTrackClickEvent(): LiveData<Track> = trackClickEvent
+    private val trackClickEvent = SingleEventLiveData<ParcelableTrack>()
+    fun getTrackClickEvent(): LiveData<ParcelableTrack> = trackClickEvent
 
-    private val favoritesState = MutableLiveData<List<Track>>()
-    fun getFavoritesState(): LiveData<List<Track>> = favoritesState
+    private val favoritesState = MutableLiveData<List<ParcelableTrack>>()
+    fun getFavoritesState(): LiveData<List<ParcelableTrack>> = favoritesState
 
     private var isClickAllowed = true
     private var clickJob: Job? = null
 
-    fun onTrackClick(track: Track) {
+    fun onTrackClick(track: ParcelableTrack) {
         if (clickDebounce()) {
             trackClickEvent.setValue(track)
         }
@@ -45,7 +46,7 @@ class FavoritesViewModel(
     fun render(){
         viewModelScope.launch {
             favoritesInteractor.favoritesTracks().collect { tracks ->
-                favoritesState.postValue(tracks)
+                favoritesState.postValue(tracks.map { track -> track.toParcelable() })
             }
         }
     }

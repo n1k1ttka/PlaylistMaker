@@ -4,16 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.playlistmaker.Domain.Track
 import com.example.playlistmaker.Presentation.state.TrackListState
 import com.example.playlistmaker.Domain.search.TrackInteractor
+import com.example.playlistmaker.Presentation.mappers.toDomain
+import com.example.playlistmaker.Presentation.mappers.toParcelable
+import com.example.playlistmaker.Presentation.model.ParcelableTrack
 import com.example.playlistmaker.Presentation.model.search.STORYSIZE
 import com.example.playlistmaker.Presentation.utils.SingleEventFlow
 import com.example.playlistmaker.Presentation.utils.SingleEventLiveData
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharedFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
 class SearchViewModel(
@@ -23,11 +24,11 @@ class SearchViewModel(
     private val state = MutableLiveData<TrackListState>()
     fun getState(): LiveData<TrackListState> = state
 
-    private val trackClickEvent = SingleEventLiveData<Track>()
-    fun getTrackClickEvent(): LiveData<Track> = trackClickEvent
+    private val trackClickEvent = SingleEventLiveData<ParcelableTrack>()
+    fun getTrackClickEvent(): LiveData<ParcelableTrack> = trackClickEvent
 
-    private val trackListenedClickEvent = SingleEventFlow<Track>()
-    fun getListenedTrackClickEvent(): SharedFlow<Track> = trackListenedClickEvent.events
+    private val trackListenedClickEvent = SingleEventFlow<ParcelableTrack>()
+    fun getListenedTrackClickEvent(): SharedFlow<ParcelableTrack> = trackListenedClickEvent.events
 
     private var isClickAllowed = true
 
@@ -35,18 +36,18 @@ class SearchViewModel(
     private var clickJob: Job? = null
     private var latestSearchText: String? = null
 
-    private val _songs = mutableListOf<Track>()
-    private val _story = mutableListOf<Track>()
+    private val _songs = mutableListOf<ParcelableTrack>()
+    private val _story = mutableListOf<ParcelableTrack>()
 
     fun loadListenedTracks() {
         state.value = TrackListState.Loading
         _story.clear()
-        _story.addAll(trackInteractor.loadListenedTracks())
+        _story.addAll(trackInteractor.loadListenedTracks().map { listenedTrack -> listenedTrack.toParcelable() })
         state.value = TrackListState.Story(_story)
     }
 
     fun saveListenedTracks() {
-        trackInteractor.saveListenedTracks(_story)
+        trackInteractor.saveListenedTracks(_story.map { it.toDomain() })
     }
 
     fun clearListenedTracks() {
@@ -88,7 +89,7 @@ class SearchViewModel(
         searchJob?.cancel()
     }
 
-    fun addInStory(item: Track) {
+    fun addInStory(item: ParcelableTrack) {
         if (_story.remove(item)) {
             _story.add(0, item)
         } else {
@@ -100,14 +101,14 @@ class SearchViewModel(
         saveListenedTracks()
     }
 
-    fun onTrackClick(track: Track) {
+    fun onTrackClick(track: ParcelableTrack) {
         if (clickDebounce()) {
             trackClickEvent.setValue(track)
             addInStory(track)
         }
     }
 
-    fun triggerEvent(track: Track) {
+    fun triggerEvent(track: ParcelableTrack) {
         viewModelScope.launch {
             trackListenedClickEvent.sendEvent(track)
         }
@@ -125,7 +126,7 @@ class SearchViewModel(
                     else if (tracks != null) {
                         if (tracks.isNotEmpty()) {
                             _songs.clear()
-                            _songs.addAll(tracks)
+                            _songs.addAll(tracks.map { it.toParcelable() })
                             state.postValue(TrackListState.Content(_songs))
                         }
                     } else {

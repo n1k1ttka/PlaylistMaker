@@ -9,14 +9,16 @@ import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.*
-import androidx.core.content.ContentProviderCompat.requireContext
+import androidx.core.content.ContextCompat
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.Presentation.utils.dpToPx
 import com.example.playlistmaker.R
 import com.example.playlistmaker.UI.media.view_model.NewPlayListViewModel
 import com.example.playlistmaker.databinding.PlaylistCreateFragmentBinding
@@ -47,6 +49,10 @@ class NewPlayListFragment: Fragment() {
 
         val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
             binding?.playlistAvatar?.setImageDrawable(null)
+            Glide.with(this)
+                .load(uri)
+                .transform(RoundedCorners(8.dpToPx(requireContext())))
+                .into(binding?.playlistAvatar!!)
             binding?.playlistAvatar?.setImageURI(uri)
             viewModel.setImageSelected(uri)
         }
@@ -94,7 +100,7 @@ class NewPlayListFragment: Fragment() {
 
     private fun handleBackPress() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            if (viewModel.hasUnsavedChanges() && viewModel.exitDialogShowed.value == false) {
+            if (viewModel.hasUnsavedChanges()) {
                 showConfirmExitDialog()
             } else {
                 findNavController().popBackStack()
@@ -103,14 +109,24 @@ class NewPlayListFragment: Fragment() {
     }
 
     private fun showConfirmExitDialog() {
-        AlertDialog.Builder(requireContext())
+        val dialog = AlertDialog.Builder(requireContext())
             .setTitle(getString(R.string.finish_to_create_playlist))
             .setMessage(R.string.all_unsaved_data_will_be_lost)
             .setPositiveButton(R.string.finish) { _, _ ->
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
             .setNegativeButton(R.string.cancel, null)
-            .show()
+            .create()
+
+        dialog.setOnShowListener {
+            val positiveColor = ContextCompat.getColor(requireContext(), R.color.blue)
+            val negativeColor = ContextCompat.getColor(requireContext(), R.color.blue)
+
+            dialog.getButton(AlertDialog.BUTTON_POSITIVE)?.setTextColor(positiveColor)
+            dialog.getButton(AlertDialog.BUTTON_NEGATIVE)?.setTextColor(negativeColor)
+        }
+
+        dialog.show()
 
         viewModel.confirmExitDialogShowed()
     }

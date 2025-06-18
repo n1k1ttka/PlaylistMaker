@@ -7,11 +7,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.playlistmaker.Domain.Playlist
-import com.example.playlistmaker.Domain.Track
 import com.example.playlistmaker.Domain.db.FavoritesInteractor
 import com.example.playlistmaker.Domain.db.PlaylistInteractor
 import com.example.playlistmaker.Domain.db.PlaylistTrackInteractor
+import com.example.playlistmaker.Presentation.mappers.toDomain
+import com.example.playlistmaker.Presentation.model.ParcelableTrack
 import com.example.playlistmaker.Presentation.state.PlayerState
+import com.example.playlistmaker.Presentation.state.PlaylistState
 import com.example.playlistmaker.Presentation.utils.SingleEventLiveData
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -33,25 +35,25 @@ class MediaViewModel(
     private val _playerState = MutableLiveData<PlayerState>(PlayerState.Default())
     val playerState: LiveData<PlayerState> = _playerState
 
-    private val playlistState = MutableLiveData<List<Playlist>>()
-    fun getPlaylistState(): LiveData<List<Playlist>> = playlistState
+    private val playlistState = MutableLiveData<PlaylistState>()
+    fun getPlaylistState(): LiveData<PlaylistState> = playlistState
 
-    private val playlistClickEvent = SingleEventLiveData<Playlist>()
-    fun getPlaylistClickEvent(): LiveData<Playlist> = playlistClickEvent
+//    private val playlistClickEvent = SingleEventLiveData<Playlist>()
+//    fun getPlaylistClickEvent(): LiveData<Playlist> = playlistClickEvent
 
     private val likeState = MutableLiveData(false)
     fun getLikeState(): LiveData<Boolean> = likeState
 
-    private val addedInPlaylist = MutableLiveData<Boolean>()
-    fun getAddedInPlaylist(): LiveData<Boolean> = addedInPlaylist
+//    private val addedInPlaylist = MutableLiveData<Boolean>()
+//    fun getAddedInPlaylist(): LiveData<Boolean> = addedInPlaylist
 
     private var currentPosition: Int = 0
     private var isPlaying: Boolean = false
     private var rotatePlaying: Boolean = false
     private var currentTrackUrl: String? = null
-    private var currentTrack: Track? = null
+    private var currentTrack: ParcelableTrack? = null
 
-    fun preparePlayer(track: Track) {
+    fun preparePlayer(track: ParcelableTrack) {
         checkFavorites(track)
         if (track.previewUrl == currentTrackUrl) {
             restorePlayerState()
@@ -145,22 +147,22 @@ class MediaViewModel(
         mediaPlayer.release()
     }
 
-    private fun checkFavorites(track: Track) {
+    private fun checkFavorites(track: ParcelableTrack) {
         viewModelScope.launch {
             favoritesInteractor.favoritesTracks().collect { tracks ->
-                likeState.postValue(tracks.contains(track))
+                likeState.postValue(tracks.contains(track.toDomain()))
             }
         }
     }
 
-    fun like(track: Track) {
+    fun like(track: ParcelableTrack) {
         viewModelScope.launch {
-            if (favoritesInteractor.addFavorite(track) == -1L) {
-                Log.d("CheckFavorTracks","${favoritesInteractor.addFavorite(track)}")
+            if (favoritesInteractor.addFavorite(track.toDomain()) == -1L) {
+                Log.d("CheckFavorTracks","${favoritesInteractor.addFavorite(track.toDomain())}")
                 likeState.postValue(false)
-                favoritesInteractor.deleteFromFavorites(track)
+                favoritesInteractor.deleteFromFavorites(track.toDomain())
             } else {
-                Log.d("CheckFavorTracks","${favoritesInteractor.addFavorite(track)}")
+                Log.d("CheckFavorTracks","${favoritesInteractor.addFavorite(track.toDomain())}")
                 likeState.postValue(true)
             }
         }
@@ -169,7 +171,7 @@ class MediaViewModel(
     fun getPlaylists(){
         viewModelScope.launch {
             playlistsInteractor.getPlaylists().collect() { playlists ->
-                playlistState.postValue(playlists)
+                playlistState.postValue(PlaylistState.WebPlaylists(playlists))
             }
         }
     }
@@ -178,8 +180,7 @@ class MediaViewModel(
         if (clickDebounce()) {
             viewModelScope.launch {
                 currentTrack?.let {
-                    playlistClickEvent.postValue(playlist)
-                    addedInPlaylist.postValue(playlistTrackInteractor.insertTrackToPlaylist(currentTrack!!, playlist.id) != -1L)
+                    playlistState.postValue(PlaylistState.PlaylistClick(playlist, playlistTrackInteractor.insertTrackToPlaylist(currentTrack!!.toDomain(), playlist.id) != -1L))
                 }
             }
         }

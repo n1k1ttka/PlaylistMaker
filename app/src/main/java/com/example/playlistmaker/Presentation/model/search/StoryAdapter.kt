@@ -5,10 +5,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.playlistmaker.R
 import com.example.playlistmaker.Domain.Track
+import com.example.playlistmaker.Presentation.model.ParcelableTrack
 
 class StoryAdapter(
-    private var story: List<Track>,
-    private val onItemClick: (Track) -> Unit,
+    private var story: List<ParcelableTrack>,
+    private val onItemClick: (ParcelableTrack) -> Unit,
     private val animation: () -> Unit
 ):  RecyclerView.Adapter<TrackViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TrackViewHolder {
@@ -25,7 +26,7 @@ class StoryAdapter(
         }
     }
 
-    fun updateData(newTracks: List<Track>) {
+    fun updateData(newTracks: List<ParcelableTrack>) {
         story = newTracks
         notifyDataSetChanged()
     }
