@@ -22,9 +22,6 @@ class NewPlayListViewModel(
     private val _isImageSelected = MutableLiveData<Uri?>()
     val isImageSelected: LiveData<Uri?> = _isImageSelected
 
-    private val _exitDialogShowed = MutableLiveData(false)
-    val exitDialogShowed: LiveData<Boolean> = _exitDialogShowed
-
     fun updateName(newName: String) {
         _name.value = newName
     }
@@ -35,10 +32,6 @@ class NewPlayListViewModel(
 
     fun setImageSelected(uri: Uri?) {
         _isImageSelected.value = uri
-    }
-
-    fun confirmExitDialogShowed(){
-        _exitDialogShowed.value = true
     }
 
     fun hasUnsavedChanges(): Boolean {

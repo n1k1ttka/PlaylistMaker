@@ -32,6 +32,8 @@ class NewPlayListFragment: Fragment() {
     private var binding: PlaylistCreateFragmentBinding? = null
     private val viewModel: NewPlayListViewModel by viewModel()
 
+    private var isExitConfirmed = false
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -79,7 +81,7 @@ class NewPlayListFragment: Fragment() {
         }
 
         binding?.createButton?.setOnClickListener {
-            viewModel.confirmExitDialogShowed()
+            isExitConfirmed = true
             val uri = viewModel.isImageSelected.value
             val path = if (uri != null) {
                 saveImageToPrivateStorage(uri)
@@ -100,7 +102,7 @@ class NewPlayListFragment: Fragment() {
 
     private fun handleBackPress() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner) {
-            if (viewModel.hasUnsavedChanges()) {
+            if (!isExitConfirmed && viewModel.hasUnsavedChanges()) {
                 showConfirmExitDialog()
             } else {
                 findNavController().popBackStack()
@@ -113,6 +115,7 @@ class NewPlayListFragment: Fragment() {
             .setTitle(getString(R.string.finish_to_create_playlist))
             .setMessage(R.string.all_unsaved_data_will_be_lost)
             .setPositiveButton(R.string.finish) { _, _ ->
+                isExitConfirmed = true
                 requireActivity().onBackPressedDispatcher.onBackPressed()
             }
             .setNegativeButton(R.string.cancel, null)
@@ -127,8 +130,6 @@ class NewPlayListFragment: Fragment() {
         }
 
         dialog.show()
-
-        viewModel.confirmExitDialogShowed()
     }
 
     private fun saveImageToPrivateStorage(uri: Uri): String {
