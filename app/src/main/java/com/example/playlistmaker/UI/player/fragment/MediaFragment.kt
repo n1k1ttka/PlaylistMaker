@@ -1,5 +1,7 @@
 package com.example.playlistmaker.UI.player.fragment
 
+import android.content.res.ColorStateList
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -23,6 +25,9 @@ import com.example.playlistmaker.UI.main.activity.MainActivity
 import com.example.playlistmaker.UI.player.view_model.MediaViewModel
 import com.example.playlistmaker.databinding.MediaFragmentBinding
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.google.android.material.shape.CornerFamily
+import com.google.android.material.shape.MaterialShapeDrawable
+import com.google.android.material.shape.ShapeAppearanceModel
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -50,6 +55,17 @@ class MediaFragment: Fragment() {
         val track = savedInstanceState?.getParcelable<ParcelableTrack>(ARGS_TRACK) ?: requireArguments().getParcelable(ARGS_TRACK)
 
         val bottomSheetContainer = binding.standardBottomSheet
+        val shapeAppearanceModel = ShapeAppearanceModel.builder()
+            .setTopLeftCorner(CornerFamily.ROUNDED, 24f)
+            .setTopRightCorner(CornerFamily.ROUNDED, 24f)
+            .build()
+
+        val materialShapeDrawable = MaterialShapeDrawable(shapeAppearanceModel).apply {
+            fillColor = ColorStateList.valueOf(resources.getColor(R.color.white_black))
+            elevation = bottomSheetContainer.elevation
+        }
+
+        bottomSheetContainer.background = materialShapeDrawable
         val bottomSheetBehavior = BottomSheetBehavior.from(bottomSheetContainer)
         bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
 
