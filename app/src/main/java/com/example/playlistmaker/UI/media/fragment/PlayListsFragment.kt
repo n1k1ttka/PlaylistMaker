@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
@@ -11,6 +12,7 @@ import com.example.playlistmaker.Presentation.model.playlists.PlaylistAdapter
 import com.example.playlistmaker.R
 import com.example.playlistmaker.UI.main.activity.MainActivity
 import com.example.playlistmaker.UI.media.view_model.PlayListsViewModel
+import com.example.playlistmaker.UI.playlist.fragment.PlaylistFragment
 import com.example.playlistmaker.databinding.PlaylistsFragmentBinding
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
@@ -54,8 +56,12 @@ class PlayListsFragment: Fragment() {
             }
         }
 
-        viewModel.getPlaylistClickEvent().observe(viewLifecycleOwner) {
-            //"Неким образом посмотрим на содержимое"
+        viewModel.getPlaylistClickEvent().observe(viewLifecycleOwner) { playlist ->
+            (activity as MainActivity).animateBottomNavigationView()
+            findNavController().navigate(
+                R.id.action_mediaPlayerFragment2_to_playlistFragment,
+                bundleOf(PlaylistFragment.ARGS_PLAYLIST to playlist.id)
+            )
         }
 
         binding?.newPlaylist?.setOnClickListener {

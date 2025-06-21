@@ -3,5 +3,5 @@
     <!-- Цвет когда в фокусе -->
     <item android:color="@color/blue" android:state_focused="true" />
     <!-- Цвет когда не в фокусе -->
-    <item android:color="@color/grey" />
+    <item android:color="@color/gray" />
 </selector>

@@ -9,6 +9,6 @@ data class PlaylistEntity (
     @PrimaryKey(autoGenerate = true) @ColumnInfo("playlist_id") val playlistId: Int = 0,
     @ColumnInfo("avatar_path") val avatarPath: String,
     @ColumnInfo("playlist_name") val playlistName: String,
-    val description: String,
+    val description: String?,
     @ColumnInfo("created_at") val createdAt: Long = System.currentTimeMillis()
 )
