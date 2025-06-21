@@ -17,7 +17,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.playlistmaker.Domain.Track
+import com.example.playlistmaker.Presentation.mappers.toParcelable
+import com.example.playlistmaker.Presentation.model.ParcelableTrack
 import com.example.playlistmaker.Presentation.model.search.StoryAdapter
 import com.example.playlistmaker.Presentation.model.search.TrackAdapter
 import com.example.playlistmaker.Presentation.state.TrackListState
@@ -142,7 +143,7 @@ class SearchFragment: Fragment() {
         binding.clearHistory.isVisible = false
     }
 
-    private fun showContent(tracks: List<Track>) {
+    private fun showContent(tracks: List<ParcelableTrack>) {
 
         adapter?.updateData(tracks)
         binding.trackRecyclerView.adapter = adapter
@@ -152,7 +153,7 @@ class SearchFragment: Fragment() {
         showList()
     }
 
-    private fun showStory(story: List<Track>) {
+    private fun showStory(story: List<ParcelableTrack>) {
 
         storyAdapter?.updateData(story)
         binding.trackRecyclerView.adapter = storyAdapter

@@ -48,4 +48,12 @@
         <item name="itemIconTint">@drawable/bottom_nav_icon_colors</item>
         <item name="itemTextColor">@drawable/bottom_nav_icon_colors</item>
     </style>
+
+    <style name="Widget.PlaylistMaker.TextInputLayout.OutlinedBox" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="cursorColor">#3772E7</item>
+        <item name="hintTextColor">#3772E7</item>
+        <item name="boxStrokeColor">@drawable/box_stroke_color_selector</item>
+        <item name="boxStrokeWidth">1dp</item>
+        <item name="boxStrokeWidthFocused">1dp</item>
+    </style>
 </resources>

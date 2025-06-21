@@ -1,6 +1,5 @@
 package com.example.playlistmaker.Domain.search.impl
 
-import android.util.Log
 import com.example.playlistmaker.Domain.Resource
 import com.example.playlistmaker.Domain.Track
 import com.example.playlistmaker.Domain.search.HistoryRepository
@@ -8,8 +7,6 @@ import com.example.playlistmaker.Domain.search.TrackInteractor
 import com.example.playlistmaker.Domain.search.TrackRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import java.io.IOException
-import java.util.concurrent.Executors
 
 class TrackInteractorImpl(
     private val trackRepository: TrackRepository,

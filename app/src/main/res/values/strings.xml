@@ -29,4 +29,14 @@
     <string name="playlists_not_ex">Вы не создали ни одного плейлиста</string>
     <string name="new_playlist">Новый плейлист</string>
     <string name="track_library_empty">Ваша медиатека пуста</string>
+    <string name="playlist_name">Название*</string>
+    <string name="playlist_description">Описание</string>
+    <string name="create">Создать</string>
+    <string name="playlist_created">Плейлист %1$s создан</string>
+    <string name="added_to_playlist">Добавлено в плейлист %1$s</string>
+    <string name="not_added_to_playlist">Трек уже добавлен в плейлист %1$s</string>
+    <string name="finish_to_create_playlist">Завершить создание плейлиста?</string>
+    <string name="all_unsaved_data_will_be_lost">Все несохраненные данные будут потеряны</string>
+    <string name="finish">Завершить</string>
+    <string name="cancel">Отмена</string>
 </resources>

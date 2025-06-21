@@ -1,10 +1,8 @@
 [versions]
 agp = "8.5.1"
-coreKtxVersion = "1.16.0"
 fragmentKtx = "1.8.6"
 fragmentKtxVersion = "1.5.5"
 glide = "4.14.2"
-googleMaterial = "1.12.0"
 koinAndroid = "3.3.0"
 kotlin = "2.1.10"
 coreKtx = "1.10.1"
@@ -16,7 +14,6 @@ lifecycleViewmodelKtx = "2.8.7"
 material = "1.10.0"
 activity = "1.8.0"
 constraintlayout = "2.1.4"
-materialVersion = "1.6.1"
 navigationFragmentKtx = "2.8.9"
 retrofit = "2.9.0"
 roomRuntime = "2.7.1"
@@ -24,7 +21,6 @@ viewpager2 = "1.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
-androidx-core-ktx-v1160 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtxVersion" }
 androidx-fragment-ktx-v186 = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
@@ -45,8 +41,6 @@ koin-android = { module = "io.insert-koin:koin-android", version.ref = "koinAndr
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
 androidx-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-material-v1120 = { module = "com.google.android.material:material", version.ref = "googleMaterial" }
-material-v161 = { module = "com.google.android.material:material", version.ref = "materialVersion" }
 retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }
 
 [plugins]
