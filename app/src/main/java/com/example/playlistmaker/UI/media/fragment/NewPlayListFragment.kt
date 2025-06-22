@@ -49,11 +49,9 @@ class NewPlayListFragment: Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        handleBackPress()
-
         binding?.playlistAvatar?.setImageURI(viewModel.isImageSelected.value)
 
-        viewModel.isUpdate(requireArguments().getSerializable(ARGS_PLAYLIST) as? Playlist)
+        viewModel.isUpdate(arguments?.getSerializable(ARGS_PLAYLIST) as? Playlist)
         viewModel.isPlaylistUpdated.observe(viewLifecycleOwner) { playlist ->
             when(playlist == null){
                 true -> {}
@@ -67,6 +65,7 @@ class NewPlayListFragment: Fragment() {
                     isExitConfirmed = true
                 }
             }
+            handleBackPress()
         }
 
         val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
@@ -89,7 +88,7 @@ class NewPlayListFragment: Fragment() {
         }
 
         binding?.back?.setOnClickListener {
-            if (viewModel.hasUnsavedChanges()) {
+            if (!isExitConfirmed && viewModel.hasUnsavedChanges()) {
                 showConfirmExitDialog()
             } else {
                 findNavController().popBackStack()
