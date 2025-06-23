@@ -15,16 +15,36 @@ class PlaylistInteractorImpl(
     override fun getPlaylists(): Flow<List<Playlist>> {
         return playlistRepository.getPlaylists().map { playlistsDto ->
             playlistsDto.map { playlistDto ->
-                val tracks = playlistTrackRepository.getTracksForPlaylist(playlistDto.id)
+                var duration: Long = 0
+                val tracks = playlistTrackRepository.getTracksForPlaylist(playlistDto.id).map { track ->
+                    duration += track.trackTimeMillis
+                }
                 Playlist(
                     id = playlistDto.id,
                     playlistName = playlistDto.playlistName,
                     avatarPath = playlistDto.avatarPath,
                     description = playlistDto.description,
-                    tracksCount = tracks.size
+                    tracksCount = tracks.size,
+                    tracksDuration = duration
                 )
             }
         }
+    }
+
+    override suspend fun getPlaylist(playlistId: Int): Playlist {
+        val currentPlaylist = playlistRepository.getPlaylist(playlistId)
+        var duration: Long = 0
+        val tracks = playlistTrackRepository.getTracksForPlaylist(currentPlaylist.id).map { track ->
+            duration += track.trackTimeMillis
+        }
+        return Playlist(
+            id = currentPlaylist.id,
+            playlistName = currentPlaylist.playlistName,
+            avatarPath = currentPlaylist.avatarPath,
+            description = currentPlaylist.description,
+            tracksCount = tracks.size,
+            tracksDuration = duration
+        )
     }
 
     override suspend fun addPlaylist(playlist: Playlist): Long {
@@ -37,6 +57,18 @@ class PlaylistInteractorImpl(
             )
         )
     }
+
+    override suspend fun updatePlaylist(playlist: Playlist) {
+        playlistRepository.updatePlaylist(
+            PlaylistDto(
+                id = playlist.id,
+                avatarPath = playlist.avatarPath,
+                playlistName = playlist.playlistName,
+                description = playlist.description
+            )
+        )
+    }
+
 
     override suspend fun deletePlaylist(playlist: Playlist) {
         return playlistRepository.deletePlaylist(

@@ -40,4 +40,13 @@
     <string name="all_unsaved_data_will_be_lost">All unsaved data will be lost.</string>
     <string name="finish">Finish</string>
     <string name="cancel">Cancel</string>
+    <string name="save">Сохранить</string>
+    <string name="redact">Redaction</string>
+    <string name="want_to_delete">Are you want to delete track?</string>
+    <string name="want_to_delete_playlist">Are you want to delete playlist?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="no_tracks">This playlist have no any tracks</string>
+    <string name="no_tracks_for_share">There is no list of tracks to share in this playlist."</string>
+    <string name="share_with">Share with…</string>
 </resources>

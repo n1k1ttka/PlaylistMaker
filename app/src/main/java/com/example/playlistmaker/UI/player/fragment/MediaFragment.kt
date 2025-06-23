@@ -143,7 +143,7 @@ class MediaFragment: Fragment() {
         viewModel.getPlaylistState().observe(viewLifecycleOwner) { state ->
             when(state){
                 is PlaylistState.WebPlaylists -> {
-                    when(state.playlists.isEmpty()){
+                    when(state.playlists.isNotEmpty()){
                         true -> {
                             adapter?.updateData(state.playlists)
                             binding.playlistsList.isVisible = true

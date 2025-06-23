@@ -7,7 +7,6 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.example.playlistmaker.data.db.entity.PlaylistTrackCrossRef
 import com.example.playlistmaker.data.db.entity.TrackEntity
-import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface PlaylistTrackDao {
@@ -27,8 +26,15 @@ interface PlaylistTrackDao {
     @Transaction
     suspend fun deleteTrackFromPlaylist(playlistId: Int, trackId: Int) {
         deleteTrackFromPlaylistTrackCrossRef(playlistId, trackId)
-        deleteTrackFromDataBase(trackId)
+
+        val refs = getRefsForTrack(trackId)
+        if (refs.isEmpty()) {
+            deleteTrackFromDataBase(trackId)
+        }
     }
+
+    @Query("SELECT * FROM PlaylistTrackCrossRef WHERE trackId = :trackId")
+    suspend fun getRefsForTrack(trackId: Int): List<PlaylistTrackCrossRef>
 
     @Query("DELETE FROM PlaylistTrackCrossRef WHERE playlistId = :playlistId AND trackId = :trackId")
     suspend fun deleteTrackFromPlaylistTrackCrossRef(playlistId: Int, trackId: Int)

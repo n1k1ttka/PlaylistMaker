@@ -5,8 +5,9 @@
 
     <!-- Custom colors -->
     <color name="transparent">#00000000</color>
-    <color name="grey">#AEAFB4</color>
+    <color name="gray">#AEAFB4</color>
     <color name="blue">#3772E7</color>
+    <color name="yp_light_gray">#E6E8EB</color>
 
     <!-- Custom colors day/night -->
     <color name="nav_icons">#3772E7</color>

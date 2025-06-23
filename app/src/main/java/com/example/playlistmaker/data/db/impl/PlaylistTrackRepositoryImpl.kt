@@ -18,7 +18,7 @@ class PlaylistTrackRepositoryImpl(
         return appDatabase.playlistTrackDao().insertTrackToPlaylist(dbConverter.map(track), playlistId)
     }
 
-    override suspend fun deleteTrackFromPlaylist(trackId: Int, playlistId: Int) {
-        appDatabase.playlistTrackDao().deleteTrackFromPlaylist(trackId, playlistId)
+    override suspend fun deleteTrackFromPlaylist(playlistId: Int, trackId: Int) {
+        appDatabase.playlistTrackDao().deleteTrackFromPlaylist(playlistId, trackId)
     }
 }

@@ -1,11 +1,13 @@
 package com.example.playlistmaker.UI.media.fragment
 
 import android.app.AlertDialog
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,14 +15,17 @@ import androidx.activity.addCallback
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts.*
 import androidx.core.content.ContextCompat
+import androidx.core.net.toUri
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.Domain.Playlist
 import com.example.playlistmaker.Presentation.utils.dpToPx
 import com.example.playlistmaker.R
 import com.example.playlistmaker.UI.media.view_model.NewPlayListViewModel
+import com.example.playlistmaker.UI.playlist.fragment.PlaylistFragment.Companion.ARGS_PLAYLIST
 import com.example.playlistmaker.databinding.PlaylistCreateFragmentBinding
 import com.google.android.material.snackbar.Snackbar
 import org.koin.androidx.viewmodel.ext.android.viewModel
@@ -40,14 +45,31 @@ class NewPlayListFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = PlaylistCreateFragmentBinding.inflate(inflater, container, false)
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         return binding?.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        handleBackPress()
         binding?.playlistAvatar?.setImageURI(viewModel.isImageSelected.value)
+
+        viewModel.isUpdate(arguments?.getSerializable(ARGS_PLAYLIST) as? Playlist)
+        viewModel.isPlaylistUpdated.observe(viewLifecycleOwner) { playlist ->
+            when(playlist == null){
+                true -> {}
+                false -> {
+                    binding?.playlistAvatar?.setImageURI(playlist.avatarPath.toUri())
+                    viewModel.setImageSelected(playlist.avatarPath.toUri())
+                    binding?.nameEditText?.setText(playlist.playlistName)
+                    binding?.descriptionEditText?.setText(playlist.description)
+                    binding?.createButton?.text = getString(R.string.save)
+                    binding?.mainHeader?.text = getString(R.string.redact)
+                    isExitConfirmed = true
+                }
+            }
+            handleBackPress()
+        }
 
         val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
             binding?.playlistAvatar?.setImageDrawable(null)
@@ -69,7 +91,7 @@ class NewPlayListFragment: Fragment() {
         }
 
         binding?.back?.setOnClickListener {
-            if (viewModel.hasUnsavedChanges()) {
+            if (!isExitConfirmed && viewModel.hasUnsavedChanges()) {
                 showConfirmExitDialog()
             } else {
                 findNavController().popBackStack()
@@ -86,7 +108,7 @@ class NewPlayListFragment: Fragment() {
             val path = if (uri != null) {
                 saveImageToPrivateStorage(uri)
             } else ""
-            viewModel.createPlaylist(path)
+            viewModel.savePlaylist(path)
 
             Snackbar.make(
                 requireView(),
@@ -134,19 +156,34 @@ class NewPlayListFragment: Fragment() {
 
     private fun saveImageToPrivateStorage(uri: Uri): String {
 
-        val directory = File(requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "playlistAvatars")
-        if (!directory.exists()){
-            directory.mkdirs()
+        if (uri == null || uri.scheme != "content") {
+            return ""
         }
 
-        val file = File(directory, "playlist_${System.currentTimeMillis()}.png")
-        val inputStream = requireContext().contentResolver.openInputStream(uri)
-        val outputStream = FileOutputStream(file)
-        BitmapFactory
-            .decodeStream(inputStream)
-            .compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
+        return try {
+            val directory = File(
+                requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                "playlistAvatars"
+            )
+            if (!directory.exists()) {
+                directory.mkdirs()
+            }
 
-        return file.absolutePath
+            val file = File(directory, "playlist_${System.currentTimeMillis()}.jpg")
+
+            requireContext().contentResolver.openInputStream(uri)?.use { inputStream ->
+                FileOutputStream(file).use { outputStream ->
+                    BitmapFactory.decodeStream(inputStream)
+                        ?.compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
+                }
+            } ?: run {
+                return ""
+            }
+
+            file.absolutePath
+        } catch (e: Exception) {
+            ""
+        }
     }
 
 

@@ -4,7 +4,6 @@ import com.example.playlistmaker.Domain.Track
 import com.example.playlistmaker.Domain.db.PlaylistTrackInteractor
 import com.example.playlistmaker.Domain.db.PlaylistTrackRepository
 import com.example.playlistmaker.data.dto.TrackDto
-import kotlinx.coroutines.flow.Flow
 
 class PlaylistTrackInteractorImpl(
     private val playlistTrackRepository: PlaylistTrackRepository
@@ -31,7 +30,7 @@ class PlaylistTrackInteractorImpl(
         )
     }
 
-    override suspend fun deleteTrackFromPlaylist(trackId: Int, playlistId: Int) {
-        playlistTrackRepository.deleteTrackFromPlaylist(trackId, playlistId)
+    override suspend fun deleteTrackFromPlaylist(playlistId: Int, trackId: Int) {
+        playlistTrackRepository.deleteTrackFromPlaylist(playlistId, trackId)
     }
 }

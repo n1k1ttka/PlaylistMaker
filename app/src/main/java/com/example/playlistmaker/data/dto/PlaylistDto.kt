@@ -4,5 +4,5 @@ data class PlaylistDto(
     val id: Int,
     val avatarPath: String,
     val playlistName: String,
-    val description: String
+    val description: String?
 )
