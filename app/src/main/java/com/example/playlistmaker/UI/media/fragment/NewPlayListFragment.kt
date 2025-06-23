@@ -1,11 +1,13 @@
 package com.example.playlistmaker.UI.media.fragment
 
 import android.app.AlertDialog
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,6 +45,7 @@ class NewPlayListFragment: Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = PlaylistCreateFragmentBinding.inflate(inflater, container, false)
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         return binding?.root
     }
 
@@ -153,19 +156,34 @@ class NewPlayListFragment: Fragment() {
 
     private fun saveImageToPrivateStorage(uri: Uri): String {
 
-        val directory = File(requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES), "playlistAvatars")
-        if (!directory.exists()){
-            directory.mkdirs()
+        if (uri == null || uri.scheme != "content") {
+            return ""
         }
 
-        val file = File(directory, "playlist_${System.currentTimeMillis()}.png")
-        val inputStream = requireContext().contentResolver.openInputStream(uri)
-        val outputStream = FileOutputStream(file)
-        BitmapFactory
-            .decodeStream(inputStream)
-            .compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
+        return try {
+            val directory = File(
+                requireActivity().getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                "playlistAvatars"
+            )
+            if (!directory.exists()) {
+                directory.mkdirs()
+            }
 
-        return file.absolutePath
+            val file = File(directory, "playlist_${System.currentTimeMillis()}.jpg")
+
+            requireContext().contentResolver.openInputStream(uri)?.use { inputStream ->
+                FileOutputStream(file).use { outputStream ->
+                    BitmapFactory.decodeStream(inputStream)
+                        ?.compress(Bitmap.CompressFormat.JPEG, 30, outputStream)
+                }
+            } ?: run {
+                return ""
+            }
+
+            file.absolutePath
+        } catch (e: Exception) {
+            ""
+        }
     }
 
 

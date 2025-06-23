@@ -1,6 +1,7 @@
 package com.example.playlistmaker.UI.media.view_model
 
 import android.net.Uri
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -47,30 +48,38 @@ class NewPlayListViewModel(
 
     fun savePlaylist(avatarPath: String) {
         viewModelScope.launch {
-            if (isPlaylistUpdated.value != null) {
-                isPlaylistUpdated.value.let {
-                    playlistInteractor.updatePlaylist(
-                        Playlist(
-                            id = isPlaylistUpdated.value!!.id,
-                            avatarPath = avatarPath,
-                            playlistName = name.value.orEmpty(),
-                            description = description.value.orEmpty(),
-                            tracksCount = isPlaylistUpdated.value!!.tracksCount,
-                            tracksDuration = isPlaylistUpdated.value!!.tracksDuration
-                        )
-                    )
-                }
-            } else {
-                playlistInteractor.addPlaylist(
-                    Playlist(
-                        id = 0,
-                        avatarPath = avatarPath,
-                        playlistName = name.value.orEmpty(),
-                        description = description.value.orEmpty(),
-                        tracksCount = 0,
-                        tracksDuration = 0
-                    )
+            val currentName = name.value.orEmpty()
+            val currentDescription = description.value.orEmpty()
+            val updatedPlaylist = isPlaylistUpdated.value
+
+            val playlist = if (updatedPlaylist != null) {
+                Playlist(
+                    id = updatedPlaylist.id,
+                    avatarPath = avatarPath,
+                    playlistName = currentName,
+                    description = currentDescription,
+                    tracksCount = updatedPlaylist.tracksCount,
+                    tracksDuration = updatedPlaylist.tracksDuration
                 )
+            } else {
+                Playlist(
+                    id = 0,
+                    avatarPath = avatarPath,
+                    playlistName = currentName,
+                    description = currentDescription,
+                    tracksCount = 0,
+                    tracksDuration = 0
+                )
+            }
+
+            try {
+                if (updatedPlaylist != null) {
+                    playlistInteractor.updatePlaylist(playlist)
+                } else {
+                    playlistInteractor.addPlaylist(playlist)
+                }
+            } catch (e: Exception) {
+                Log.e("PlaylistVM", "Ошибка при сохранении плейлиста", e)
             }
         }
     }

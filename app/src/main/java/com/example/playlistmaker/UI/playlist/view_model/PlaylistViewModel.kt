@@ -98,6 +98,11 @@ class PlaylistViewModel(
         return builder.toString()
     }
 
+    override fun onCleared() {
+        super.onCleared()
+        clickJob?.cancel()
+    }
+
     companion object {
         private const val SEARCH_DEBOUNCE_DELAY = 2000L
     }

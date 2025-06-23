@@ -2,6 +2,7 @@ package com.example.playlistmaker.UI.playlist.fragment
 
 import android.app.AlertDialog
 import android.content.Intent
+import android.content.pm.ActivityInfo
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -33,7 +34,8 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class PlaylistFragment(): Fragment() {
 
-    private lateinit var binding: PlaylistFragmentBinding
+    private var _binding: PlaylistFragmentBinding? = null
+    private val binding get() = _binding!!
 
     private val viewModel by viewModel<PlaylistViewModel>()
     private var adapter: TrackPlaylistAdapter? = null
@@ -43,8 +45,8 @@ class PlaylistFragment(): Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = PlaylistFragmentBinding.inflate(inflater, container, false)
-
+        _binding = PlaylistFragmentBinding.inflate(inflater, container, false)
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         return binding.root
     }
 
@@ -83,7 +85,7 @@ class PlaylistFragment(): Fragment() {
             binding.description.text = playlistState.playlist.description
             binding.duration.text = playlistState.playlist.tracksDuration.toMinutes()
             binding.trackCount.text = getTracksCountString(playlistState.playlist.tracksCount)
-            Glide.with(this)
+            Glide.with(view)
                 .load(playlistState.playlist.avatarPath)
                 .transform(RoundedCorners(2.dpToPx(requireContext())))
                 .placeholder(R.drawable.playlist_placeholder)
@@ -96,7 +98,10 @@ class PlaylistFragment(): Fragment() {
                 true -> {
                     bottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
                 }
-                false -> bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                false -> {
+                    bottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
+                    Toast.makeText(requireContext(), R.string.no_tracks, Toast.LENGTH_LONG).show()
+                }
             }
         }
 
@@ -204,7 +209,7 @@ class PlaylistFragment(): Fragment() {
 
     private fun sharing(){
         when(viewModel.getPlaylistState().value?.tracks.isNullOrEmpty()){
-            true -> Toast.makeText(requireContext(), "В этом плейлисте нет списка треков, которыми можно поделиться" ,Toast.LENGTH_LONG).show()
+            true -> Toast.makeText(requireContext(), R.string.no_tracks_for_share ,Toast.LENGTH_LONG).show()
             false -> {
                 val message = viewModel.generatePlaylistMessage(
                     viewModel.getPlaylistState().value?.playlist,
@@ -229,8 +234,15 @@ class PlaylistFragment(): Fragment() {
             type = "text/plain"
         }
 
-        val shareIntent = Intent.createChooser(sendIntent, "Поделиться плейлистом через...")
+        val shareIntent = Intent.createChooser(sendIntent, getString(R.string.share_with))
         startActivity(shareIntent)
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
+        adapter = null
+        requireActivity().requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
     }
 
     companion object {
