@@ -38,14 +38,8 @@ class MediaViewModel(
     private val playlistState = MutableLiveData<PlaylistState>()
     fun getPlaylistState(): LiveData<PlaylistState> = playlistState
 
-//    private val playlistClickEvent = SingleEventLiveData<Playlist>()
-//    fun getPlaylistClickEvent(): LiveData<Playlist> = playlistClickEvent
-
     private val likeState = MutableLiveData(false)
     fun getLikeState(): LiveData<Boolean> = likeState
-
-//    private val addedInPlaylist = MutableLiveData<Boolean>()
-//    fun getAddedInPlaylist(): LiveData<Boolean> = addedInPlaylist
 
     private var currentPosition: Int = 0
     private var isPlaying: Boolean = false
