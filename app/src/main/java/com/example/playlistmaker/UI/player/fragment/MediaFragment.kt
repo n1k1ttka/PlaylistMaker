@@ -115,16 +115,19 @@ class MediaFragment: Fragment() {
         viewModel.playerState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is PlayerState.Playing -> {
-                    binding.play.setImageResource(R.drawable.pause)
+//                    binding.play.setImageResource(R.drawable.pause)
+                    binding.play.setPlaying(true)
                     binding.time.text = state.progress
                 }
                 is PlayerState.Paused -> {
-                    binding.play.setImageResource(R.drawable.play)
+//                    binding.play.setImageResource(R.drawable.play)
+                    binding.play.setPlaying(false)
                     binding.time.text = state.progress
                 }
                 is PlayerState.Prepared -> {
                     binding.play.isEnabled = true
-                    binding.play.setImageResource(R.drawable.play)
+//                    binding.play.setImageResource(R.drawable.play)
+                    binding.play.setPlaying(false)
                     binding.time.text = state.progress
                 }
                 is PlayerState.Default -> {}
