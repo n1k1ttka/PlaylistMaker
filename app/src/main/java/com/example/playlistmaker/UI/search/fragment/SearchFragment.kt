@@ -1,5 +1,6 @@
 package com.example.playlistmaker.UI.search.fragment
 
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +18,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.playlistmaker.Presentation.InternetConnectionBroadcastReceiver
 import com.example.playlistmaker.Presentation.mappers.toParcelable
 import com.example.playlistmaker.Presentation.model.ParcelableTrack
 import com.example.playlistmaker.Presentation.model.search.StoryAdapter
@@ -38,6 +40,8 @@ class SearchFragment: Fragment() {
 
     private var adapter: TrackAdapter? = null
     private var storyAdapter: StoryAdapter? = null
+
+    private val receiver = InternetConnectionBroadcastReceiver()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -125,6 +129,17 @@ class SearchFragment: Fragment() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val filter = IntentFilter("android.net.conn.CONNECTIVITY_CHANGE")
+        requireContext().registerReceiver(receiver, filter)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        requireContext().unregisterReceiver(receiver)
     }
 
     private fun clearButtonVisibility(s: CharSequence?): Int {
