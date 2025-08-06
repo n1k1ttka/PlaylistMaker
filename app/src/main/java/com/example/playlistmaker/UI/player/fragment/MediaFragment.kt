@@ -1,18 +1,30 @@
 package com.example.playlistmaker.UI.player.fragment
 
+import android.Manifest
+import android.content.ComponentName
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.content.ServiceConnection
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
-import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.bitmap.RoundedCorners
+import com.example.playlistmaker.Presentation.InternetConnectionBroadcastReceiver
 import com.example.playlistmaker.Presentation.model.ParcelableTrack
 import com.example.playlistmaker.Presentation.model.playlists.MiniPlaylistAdapter
 import com.example.playlistmaker.Presentation.state.PlayerState
@@ -24,6 +36,7 @@ import com.example.playlistmaker.R
 import com.example.playlistmaker.UI.main.activity.MainActivity
 import com.example.playlistmaker.UI.player.view_model.MediaViewModel
 import com.example.playlistmaker.databinding.MediaFragmentBinding
+import com.example.playlistmaker.services.music.MusicService
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
@@ -38,6 +51,32 @@ class MediaFragment: Fragment() {
 
     private val viewModel by viewModel<MediaViewModel>()
 
+    private val receiver = InternetConnectionBroadcastReceiver()
+
+    private var isBound = false
+
+    private val serviceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as MusicService.MusicServiceBinder
+            viewModel.setAudioPlayerControl(binder.getService())
+            isBound = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            isBound = false
+            viewModel.removeAudioPlayerControl()
+        }
+    }
+
+    private val requestPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            bindMusicService()
+        } else {
+            Toast.makeText(context, "Can't start service!", Toast.LENGTH_LONG).show()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -96,7 +135,7 @@ class MediaFragment: Fragment() {
                 .placeholder(R.drawable.bigplaceholder)
                 .into(binding.albumImage)
 
-            viewModel.getLikeState().observe(viewLifecycleOwner) {state ->
+            viewModel.getLikeState().observe(viewLifecycleOwner) { state ->
                 when(state) {
                     true -> binding.like.setImageResource(R.drawable.like_enabled)
                     false -> binding.like.setImageResource(R.drawable.like_disabled)
@@ -115,18 +154,15 @@ class MediaFragment: Fragment() {
         viewModel.playerState.observe(viewLifecycleOwner) { state ->
             when (state) {
                 is PlayerState.Playing -> {
-//                    binding.play.setImageResource(R.drawable.pause)
                     binding.play.setPlaying(true)
                     binding.time.text = state.progress
                 }
                 is PlayerState.Paused -> {
-//                    binding.play.setImageResource(R.drawable.play)
                     binding.play.setPlaying(false)
                     binding.time.text = state.progress
                 }
                 is PlayerState.Prepared -> {
                     binding.play.isEnabled = true
-//                    binding.play.setImageResource(R.drawable.play)
                     binding.play.setPlaying(false)
                     binding.time.text = state.progress
                 }
@@ -197,10 +233,41 @@ class MediaFragment: Fragment() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            bindMusicService()
+        }
+    }
+
+    private fun bindMusicService() {
+        val intent = Intent(requireContext(), MusicService::class.java)
+        requireContext().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+    }
+
+    private fun unbindMusicService() {
+        requireContext().unbindService(serviceConnection)
+    }
+
+    override fun onResume() {
+        super.onResume()
+
+        val filter = IntentFilter("android.net.conn.CONNECTIVITY_CHANGE")
+        requireContext().registerReceiver(receiver, filter)
+    }
+
     override fun onPause() {
         super.onPause()
-        viewModel.savePlayerState()
-        viewModel.pausePlayer()
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            return
+        }
+        val intent = Intent(requireContext(), MusicService::class.java)
+        ContextCompat.startForegroundService(requireContext(), intent)
+
+        requireContext().unregisterReceiver(receiver)
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -211,11 +278,18 @@ class MediaFragment: Fragment() {
         }
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (isRemoving) {
-            viewModel.releasePlayer()
+    override fun onDestroyView() {
+        super.onDestroyView()
+
+        if (isBound) {
+            requireContext().unbindService(serviceConnection)
+            isBound = false
         }
+
+        // Явная команда на остановку
+        val intent = Intent(requireContext(), MusicService::class.java)
+        intent.action = "STOP_AND_KILL"
+        requireContext().startService(intent)
     }
 
     companion object {
