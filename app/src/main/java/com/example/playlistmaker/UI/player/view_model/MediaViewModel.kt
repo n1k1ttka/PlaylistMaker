@@ -134,8 +134,8 @@ class MediaViewModel(
         return current
     }
 
-    fun notificationOff(){
-        audioPlayerControl?.notificationOff()
+    fun notificationOn(){
+        audioPlayerControl?.notificationOn()
     }
 
     fun removeAudioPlayerControl() {

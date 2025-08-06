@@ -124,6 +124,10 @@ internal class MusicService: Service(), AudioPlayerControl {
         stopForeground(STOP_FOREGROUND_REMOVE)
     }
 
+    override fun notificationOn(){
+        startForeground(SERVICE_NOTIFICATION_ID, createServiceNotification())
+    }
+
     override fun delete() {
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
@@ -155,6 +159,8 @@ internal class MusicService: Service(), AudioPlayerControl {
             createServiceNotification(),
             getForegroundServiceTypeConstant()
         )
+
+        notificationOff()
 
         return START_STICKY
     }

@@ -54,6 +54,8 @@ class MediaFragment: Fragment() {
 
     private var isBound = false
 
+    private var isPlaying = false
+
     private val serviceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
             val binder = service as MusicService.MusicServiceBinder
@@ -155,15 +157,18 @@ class MediaFragment: Fragment() {
                 is PlayerState.Playing -> {
                     binding.play.setPlaying(true)
                     binding.time.text = state.progress
+                    isPlaying = true
                 }
                 is PlayerState.Paused -> {
                     binding.play.setPlaying(false)
                     binding.time.text = state.progress
+                    isPlaying = false
                 }
                 is PlayerState.Prepared -> {
                     binding.play.isEnabled = true
                     binding.play.setPlaying(false)
                     binding.time.text = state.progress
+                    isPlaying = false
                 }
                 is PlayerState.Default -> {}
             }
@@ -234,7 +239,11 @@ class MediaFragment: Fragment() {
 
     override fun onStart() {
         super.onStart()
-        viewModel.notificationOff()
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            startForegroundService()
+        }
         bindMusicService()
     }
 
@@ -264,11 +273,13 @@ class MediaFragment: Fragment() {
 
         requireContext().unregisterReceiver(receiver)
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        } else {
-            startForegroundService()
-        }
+        if (isPlaying) viewModel.notificationOn()
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+//            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+//        } else {
+//            startForegroundService()
+//        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {

@@ -11,5 +11,6 @@ interface AudioPlayerControl {
     fun pausePlayer()
     fun releasePlayer()
     fun notificationOff()
+    fun notificationOn()
     fun delete()
 }
