@@ -92,13 +92,13 @@ internal class MusicService: Service(), AudioPlayerControl {
             _playerState.value = PlayerState.Prepared()
         }
         mediaPlayer?.setOnCompletionListener {
-            foregroundOff()
+            notificationOff()
             timerJob?.cancel()
             _playerState.value = PlayerState.Prepared()
         }
         mediaPlayer?.setOnErrorListener { _, what, extra ->
             _playerState.value = PlayerState.Default()
-            foregroundOff()
+            notificationOff()
             timerJob?.cancel()
             true
         }
@@ -120,12 +120,16 @@ internal class MusicService: Service(), AudioPlayerControl {
         _playerState.value = PlayerState.Paused(getCurrentPlayerPosition())
     }
 
-    override fun foregroundOff() {
+    override fun notificationOff() {
+        stopForeground(STOP_FOREGROUND_REMOVE)
+    }
+
+    override fun delete() {
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
 
-    private fun releasePlayer() {
+    override fun releasePlayer() {
         mediaPlayer?.stop()
         timerJob?.cancel()
         _playerState.value = PlayerState.Default()
@@ -144,13 +148,6 @@ internal class MusicService: Service(), AudioPlayerControl {
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        when (intent?.action) {
-            "STOP_AND_KILL" -> {
-                stopForeground(STOP_FOREGROUND_REMOVE)
-                stopSelf()
-                return START_NOT_STICKY
-            }
-        }
 
         ServiceCompat.startForeground(
             this,

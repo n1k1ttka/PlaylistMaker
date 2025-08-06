@@ -6,7 +6,6 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.content.ServiceConnection
-import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.os.Build
 import android.os.Bundle
@@ -72,7 +71,7 @@ class MediaFragment: Fragment() {
         ActivityResultContracts.RequestPermission()
     ) { isGranted: Boolean ->
         if (isGranted) {
-            bindMusicService()
+            startForegroundService()
         } else {
             Toast.makeText(context, "Can't start service!", Toast.LENGTH_LONG).show()
         }
@@ -235,11 +234,8 @@ class MediaFragment: Fragment() {
 
     override fun onStart() {
         super.onStart()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-        } else {
-            bindMusicService()
-        }
+        viewModel.notificationOff()
+        bindMusicService()
     }
 
     private fun bindMusicService() {
@@ -249,6 +245,11 @@ class MediaFragment: Fragment() {
 
     private fun unbindMusicService() {
         requireContext().unbindService(serviceConnection)
+    }
+
+    private fun startForegroundService(){
+        val intent = Intent(requireContext(), MusicService::class.java)
+        ContextCompat.startForegroundService(requireContext(), intent)
     }
 
     override fun onResume() {
@@ -261,13 +262,13 @@ class MediaFragment: Fragment() {
     override fun onPause() {
         super.onPause()
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU && ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            return
-        }
-        val intent = Intent(requireContext(), MusicService::class.java)
-        ContextCompat.startForegroundService(requireContext(), intent)
-
         requireContext().unregisterReceiver(receiver)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+        } else {
+            startForegroundService()
+        }
     }
 
     override fun onSaveInstanceState(outState: Bundle) {
@@ -282,14 +283,9 @@ class MediaFragment: Fragment() {
         super.onDestroyView()
 
         if (isBound) {
-            requireContext().unbindService(serviceConnection)
+            unbindMusicService()
             isBound = false
         }
-
-        // Явная команда на остановку
-        val intent = Intent(requireContext(), MusicService::class.java)
-        intent.action = "STOP_AND_KILL"
-        requireContext().startService(intent)
     }
 
     companion object {

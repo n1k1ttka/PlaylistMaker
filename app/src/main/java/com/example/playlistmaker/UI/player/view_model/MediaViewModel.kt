@@ -43,7 +43,7 @@ class MediaViewModel(
 
     fun setAudioPlayerControl(audioPlayerControl: AudioPlayerControl) {
         if (this.audioPlayerControl == audioPlayerControl) {
-            foregroundOff()
+            audioPlayerControl.notificationOff()
             return
         }
 
@@ -134,18 +134,20 @@ class MediaViewModel(
         return current
     }
 
+    fun notificationOff(){
+        audioPlayerControl?.notificationOff()
+    }
+
     fun removeAudioPlayerControl() {
+        audioPlayerControl?.delete()
         audioPlayerControl = null
         playerStateJob?.cancel()
         playerStateJob = null
     }
 
-    fun foregroundOff(){
-        audioPlayerControl?.foregroundOff()
-    }
-
     override fun onCleared() {
         super.onCleared()
-        foregroundOff()
+        audioPlayerControl?.releasePlayer()
+        removeAudioPlayerControl()
     }
 }

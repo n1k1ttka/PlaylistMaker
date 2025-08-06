@@ -9,5 +9,7 @@ interface AudioPlayerControl {
     fun getPlayerState(): StateFlow<PlayerState>
     fun startPlayer()
     fun pausePlayer()
-    fun foregroundOff()
+    fun releasePlayer()
+    fun notificationOff()
+    fun delete()
 }
