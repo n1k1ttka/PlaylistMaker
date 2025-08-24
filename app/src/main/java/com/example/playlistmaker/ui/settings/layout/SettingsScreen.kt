@@ -1,6 +1,7 @@
 package com.example.playlistmaker.ui.settings.layout
 
 import androidx.annotation.DrawableRes
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -39,6 +40,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .background(color = colorResource(R.color.white_black))
     ) {
         // Заголовок
         Text(
@@ -71,7 +73,7 @@ fun SettingsScreen(viewModel: SettingsViewModel) {
                 colors = SwitchDefaults.colors(
                     checkedThumbColor = colorResource(R.color.blue),
                     uncheckedThumbColor = colorResource(R.color.gray),
-                    checkedTrackColor = Color(0xFF9FBBF3),
+                    checkedTrackColor = colorResource(R.color.light_blue),
                     uncheckedTrackColor = colorResource(R.color.yp_light_gray)
                 )
             )

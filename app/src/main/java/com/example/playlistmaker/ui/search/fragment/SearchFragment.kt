@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.playlistmaker.Presentation.InternetConnectionBroadcastReceiver
 import com.example.playlistmaker.R
+import com.example.playlistmaker.ui.main.activity.MainActivity
 import com.example.playlistmaker.ui.player.fragment.MediaFragment
 import com.example.playlistmaker.ui.search.view_model.SearchViewModel
 import com.example.playlistmaker.ui.search.layout.SearchScreen
@@ -32,6 +33,7 @@ class SearchFragment : Fragment() {
                     viewModel = viewModel,
                     onTrackClick = { track ->
                         viewModel.onTrackClick(track)
+                        (activity as MainActivity).animateBottomNavigationView()
                         findNavController().navigate(
                             R.id.action_searchFragment_to_mediaFragment,
                             bundleOf(MediaFragment.ARGS_TRACK to track)
@@ -47,6 +49,12 @@ class SearchFragment : Fragment() {
                 )
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        (activity as MainActivity).checkBottomNavigationView()
     }
 
     override fun onResume() {

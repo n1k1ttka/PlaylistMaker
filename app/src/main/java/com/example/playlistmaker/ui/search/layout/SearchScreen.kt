@@ -1,12 +1,10 @@
 package com.example.playlistmaker.ui.search.layout
 
-import android.app.Activity
-import android.content.Context
-import android.content.Context.INPUT_METHOD_SERVICE
+
 import android.content.res.Configuration
-import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -16,17 +14,17 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.InputTransformation.Companion.keyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Close
 import androidx.compose.material3.Button
@@ -37,17 +35,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,7 +46,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -116,53 +106,81 @@ fun SearchScreen(
                 .padding(paddingValues),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TextField(
-                value = text,
-                onValueChange = { newText ->
-                    viewModel.setQuery(newText)
-                    viewModel.cancelSearch()
-                    viewModel.searchDebounce(newText)
-                },
-                placeholder = {
-                    Text(
-                        text = stringResource(R.string.search),
-                        color = colorResource(R.color.hint_color),
-                        fontSize = 16.sp,
-                        fontFamily = FontFamily(Font(R.font.ys_text_regular))
-                    )
-                },
-                singleLine = true,
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(40.dp)
                     .padding(horizontal = 16.dp)
-                    .clip(RoundedCornerShape(12.dp)),
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        viewModel.searchDebounce(text)
-                        focusManager.clearFocus()
-                    }
-                ),
-                trailingIcon = {
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(colorResource(R.color.yp_light_gray)),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.ic_search),
+                        contentDescription = null,
+                        tint = colorResource(R.color.hint_color)
+                    )
+
+                    Spacer(modifier = Modifier.width(8.dp))
+
+                    BasicTextField(
+                        value = text,
+                        onValueChange = { newText ->
+                            viewModel.setQuery(newText)
+                            viewModel.cancelSearch()
+                            viewModel.searchDebounce(newText)
+                        },
+                        singleLine = true,
+                        textStyle = TextStyle(
+                            color = Color.Black,
+                            fontSize = 16.sp,
+                            fontFamily = FontFamily(Font(R.font.ys_text_regular))
+                        ),
+                        modifier = Modifier
+                            .weight(1f)
+                            .padding(vertical = 8.dp),
+                        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
+                        keyboardActions = KeyboardActions(
+                            onDone = {
+                                viewModel.searchDebounce(text)
+                                focusManager.clearFocus()
+                            }
+                        ),
+                        decorationBox = { innerTextField ->
+                            if (text.isEmpty()) {
+                                Text(
+                                    text = stringResource(R.string.search),
+                                    color = colorResource(R.color.hint_color),
+                                    fontSize = 16.sp,
+                                    fontFamily = FontFamily(Font(R.font.ys_text_regular))
+                                )
+                            }
+                            innerTextField()
+                        }
+                    )
+
                     if (text.isNotEmpty()) {
                         IconButton(onClick = {
                             viewModel.setQuery("")
                             viewModel.cancelSearch()
                             viewModel.searchDebounce("")
                         }) {
-                            Icon(Icons.Default.Close, "Очистить", tint = colorResource(R.color.gray))
+                            Icon(
+                                Icons.Default.Close,
+                                contentDescription = "Очистить",
+                                tint = colorResource(R.color.hint_color)
+                            )
                         }
                     }
-                },
-                colors = TextFieldDefaults.colors(
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                    errorIndicatorColor = Color.Transparent,
-                    focusedContainerColor = colorResource(R.color.yp_light_gray),
-                    unfocusedContainerColor = colorResource(R.color.yp_light_gray)
-                )
-            )
+                }
+            }
+
 
             when (state) {
                 is TrackListState.Loading -> Box(
@@ -178,12 +196,26 @@ fun SearchScreen(
                     }
                 )
 
-                is TrackListState.Story -> TrackList(
-                    tracks = (state as TrackListState.Story).story,
-                    trackAction = { track -> onStoryClick(track) },
-                    buttonState = (state as TrackListState.Story).story.isNotEmpty(),
-                    buttonAction = { viewModel.clearListenedTracks() }
-                )
+                is TrackListState.Story -> {
+                    val storyTracks = (state as TrackListState.Story).story
+                    if(storyTracks.isNotEmpty())Text(
+                        text = stringResource(R.string.you_were_looking_for),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 42.dp, bottom = 20.dp),
+                        textAlign = TextAlign.Center,
+                        color = colorResource(R.color.black_white),
+                        fontSize = 19.sp,
+                        fontFamily = FontFamily(Font(R.font.ys_text_medium)),
+                    )
+
+                    TrackList(
+                        tracks = storyTracks,
+                        trackAction = { track -> onStoryClick(track) },
+                        buttonState = storyTracks.isNotEmpty(),
+                        buttonAction = { viewModel.clearListenedTracks() }
+                    )
+                }
 
                 is TrackListState.Error -> {
                     PlaceholderMessage(
@@ -266,7 +298,6 @@ fun MyTrackView(track: ParcelableTrack, onClick: (ParcelableTrack) -> Unit) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(text = track.artistName, fontFamily = FontFamily(Font(R.font.ys_text_regular)),
                     fontSize = 11.sp, color = colorResource(R.color.music),
-                    modifier = Modifier.weight(1f),
                     maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Icon(painter = painterResource(id = R.drawable.ic_interpoint),
                     contentDescription = null,
@@ -292,7 +323,7 @@ fun PlaceholderMessage(imageRes: Int, errorText: String, buttonState: Boolean = 
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(painter = painterResource(imageRes), contentDescription = null, modifier = Modifier.wrapContentSize())
-        Text(text = errorText, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 8.dp).wrapContentSize())
+        Text(text = errorText, textAlign = TextAlign.Center, modifier = Modifier.padding(top = 8.dp).wrapContentSize(), color = colorResource(R.color.black_white))
         if(buttonState) Button(onClick = buttonAction,
             modifier = Modifier.wrapContentSize().padding(top = 24.dp).clip(RoundedCornerShape(54.dp)),
             colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.black_white), contentColor = colorResource(R.color.white_black))) {
