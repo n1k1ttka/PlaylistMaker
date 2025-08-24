@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.playlistmaker.UI.player.fragment.MediaFragment">
+    tools:context="com.example.playlistmaker.ui.player.fragment.MediaFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/main"

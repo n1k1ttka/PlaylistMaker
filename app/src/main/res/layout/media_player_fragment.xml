@@ -7,7 +7,7 @@
     android:background="@color/white_black"
     android:orientation="vertical"
     android:fitsSystemWindows="true"
-    tools:context="com.example.playlistmaker.UI.media.fragment.MediaPlayerFragment">
+    tools:context="com.example.playlistmaker.ui.media.fragment.MediaPlayerFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
