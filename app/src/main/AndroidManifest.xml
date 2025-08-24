@@ -20,7 +20,7 @@
         android:theme="@style/Theme.PlaylistMaker"
         tools:targetApi="31">
         <activity
-            android:name=".UI.main.activity.MainActivity"
+            android:name=".ui.main.activity.MainActivity"
             android:windowSoftInputMode="adjustPan|stateHidden"
             android:exported="true">
             <intent-filter>
