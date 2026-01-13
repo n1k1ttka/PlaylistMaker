@@ -34,7 +34,7 @@ class PlaylistAdapter(
         holder.binding.trackCount.text = getTracksCountString(playlist.tracksCount)
         Glide.with(holder.itemView)
             .load(File(playlist.avatarPath))
-            .transform(RoundedCorners(8.dpToPx(holder.itemView.context)))
+            .transform(RoundedCorners(8.dpToPx(holder.itemView.context))) // вот же скругление у обложек плейлистов - в макете стоит 8px. У меня у картинок углы скругленные...
             .placeholder(R.drawable.bigplaceholder)
             .into(holder.binding.playlistImage)
 

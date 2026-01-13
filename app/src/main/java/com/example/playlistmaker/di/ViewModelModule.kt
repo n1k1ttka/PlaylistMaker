@@ -2,14 +2,14 @@ package com.example.playlistmaker.di
 
 import android.media.MediaPlayer
 import com.example.playlistmaker.R
-import com.example.playlistmaker.UI.main.view_model.MainViewModel
-import com.example.playlistmaker.UI.media.view_model.FavoritesViewModel
-import com.example.playlistmaker.UI.media.view_model.NewPlayListViewModel
-import com.example.playlistmaker.UI.media.view_model.PlayListsViewModel
-import com.example.playlistmaker.UI.player.view_model.MediaViewModel
-import com.example.playlistmaker.UI.playlist.view_model.PlaylistViewModel
-import com.example.playlistmaker.UI.search.view_model.SearchViewModel
-import com.example.playlistmaker.UI.settings.view_model.SettingsViewModel
+import com.example.playlistmaker.ui.main.view_model.MainViewModel
+import com.example.playlistmaker.ui.media.view_model.FavoritesViewModel
+import com.example.playlistmaker.ui.media.view_model.NewPlayListViewModel
+import com.example.playlistmaker.ui.media.view_model.PlayListsViewModel
+import com.example.playlistmaker.ui.player.view_model.MediaViewModel
+import com.example.playlistmaker.ui.playlist.view_model.PlaylistViewModel
+import com.example.playlistmaker.ui.search.view_model.SearchViewModel
+import com.example.playlistmaker.ui.settings.view_model.SettingsViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.qualifier.named

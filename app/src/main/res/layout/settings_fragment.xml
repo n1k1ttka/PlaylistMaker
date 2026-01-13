@@ -7,7 +7,7 @@
     android:id="@+id/main"
     android:orientation="vertical"
     android:background="@color/white_black"
-    tools:context="com.example.playlistmaker.UI.settings.fragment.SettingsFragment">
+    tools:context="com.example.playlistmaker.ui.settings.fragment.SettingsFragment">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -54,7 +54,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 app:thumbTint="@drawable/switch_thumb"
-                app:trackTint="@drawable/switch_track"/>
+                app:trackTint="@drawable/switch_track" />
         </FrameLayout>
 
         <FrameLayout
